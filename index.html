@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - ฉบับสมบูรณ์ FINAL V23</title>
+<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - FINAL V24 Robust</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,15 +21,19 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 .btn-app-action { border-radius: 10px; font-weight: 600; padding: 8px 16px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
 .manual-badge { background: #ff9800; color: #000; font-weight: 700; }
 .online-badge { background: #198754; color: white; }
-.offline-badge { background: #6c757d; color: white; }
+.offline-badge { background: #dc3545; color: white; animation: pulse 1s infinite; }
 .sync-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; }
 .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #198754; animation: pulse-dot 1.5s infinite; }
 .sync-dot.idle { background: #6c757d; animation: none; }
-.sync-dot.syncing { background: #ffc107; }
+.sync-dot.syncing { background: #ffc107; animation: spin 1s linear infinite; }
+.sync-dot.offline { background: #dc3545; animation: none; }
 @keyframes pulse-dot { 0%{transform: scale(1); opacity:1} 50%{transform: scale(1.3); opacity:0.7} 100%{transform: scale(1); opacity:1} }
+@keyframes spin { 0%{transform: rotate(0deg)} 100%{transform: rotate(360deg)} }
+@keyframes pulse { 0%{opacity:1} 50%{opacity:0.6} 100%{opacity:1} }
 .swal2-popup { font-family: 'Sarabun', sans-serif !important; border-radius: 16px !important; }
 .fullname-editor { background: #fff3cd; border: 1px solid #ffc107; border-radius: 12px; padding: 12px; }
 .version-badge { background: linear-gradient(135deg, #198754, #20c997); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+.retry-info { font-size: 0.75rem; color: #6c757d; }
 </style>
 </head>
 <body>
@@ -37,11 +41,11 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <div style="font-weight:700; display:flex; align-items:center; gap:10px;">
 <i class="fa-solid fa-shield-halved text-warning"></i>
 <span>ระบบจัดตารางเวร พฐ.จว.ตรัง</span>
-<span class="version-badge ms-2">FINAL V23</span>
+<span class="version-badge ms-2">FINAL V24 Robust</span>
 <span id="manualModeBadge" class="badge manual-badge d-none ms-2">โหมดแก้ไขเอง</span>
 <span id="onlineBadge" class="badge online-badge d-none ms-2"><i class="fa-solid fa-wifi"></i> ออนไลน์</span>
-<span id="offlineBadge" class="badge offline-badge d-none ms-2">ออฟไลน์</span>
-<span id="syncIndicator" class="sync-indicator ms-2 text-white-50"><span id="syncDot" class="sync-dot idle"></span><span id="syncText">พร้อม</span></span>
+<span id="offlineBadge" class="badge offline-badge d-none ms-2"><i class="fa-solid fa-wifi-slash"></i> ออฟไลน์</span>
+<span id="syncIndicator" class="sync-indicator ms-2 text-white-50"><span id="syncDot" class="sync-dot idle"></span><span id="syncText">พร้อม</span><span id="retryInfo" class="retry-info ms-1"></span></span>
 </div>
 <div class="d-flex align-items-center gap-2 flex-wrap">
 <div class="input-group input-group-sm w-auto">
@@ -49,7 +53,7 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <select id="monthSelect" class="form-select form-select-sm fw-bold" style="width:auto; min-width:110px;" onchange="calculateNewRoster(true)"></select>
 </div>
 <button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster(true)"><i class="fa-solid fa-rotate"></i> รีเฟรช</button>
-<button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="forceRealtimeSync()"><i class="fa-solid fa-arrows-rotate"></i> ซิงค์</button>
+<button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="testConnection()"><i class="fa-solid fa-plug"></i> ทดสอบเชื่อมต่อ</button>
 <button class="btn btn-sm btn-danger btn-app-action" onclick="exportDailyPDF()"><i class="fa-solid fa-file-pdf"></i> PDF รายวัน</button>
 <button class="btn btn-sm btn-success btn-app-action" onclick="saveToGoogleSheet()"><i class="fa-solid fa-cloud-arrow-up"></i> บันทึก</button>
 </div>
@@ -57,10 +61,9 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 
 <div class="container-fluid py-3 px-3">
 <div class="alert alert-success py-2 small mb-3">
-<div><i class="fa-solid fa-circle-check"></i> <b>ฉบับสมบูรณ์ FINAL V23</b> - รวมทุกการแก้ไข:</div>
+<div><i class="fa-solid fa-circle-check"></i> <b>V24 Robust - แก้เชื่อมติดๆ ดับๆ:</b> เพิ่ม retry 3 ครั้ง + timeout 30 วิ + ไม่ abort เร็ว</div>
 <div class="mt-1" style="line-height:1.6;">
-✅ ชีทแบบ <b>2026-10</b> (ตามข้อมูลเดิม) | ✅ ปี <b>พ.ศ. 2569-2579</b> เลขอารบิค | ✅ Smart Sync ไม่แจ้งมั่วเมื่อเปิด Sheet ทิ้งไว้<br>
-✅ แก้ชื่อสกุลครบ + <b>จ.ส.ต.ปิติพงษ์ ชัยเพชร</b> | ✅ ทีม 1 ใช้ <b>ผู้ช่วย 1+2 ไม่ใช้เวรนอน</b> ไม่ซ้ำ | ✅ เรียงผู้ช่วยตามยศก่อนสร้างฟอร์ม | ✅ PDF ไม่มี <code>[ยศ - เรียงลำดับ]</code>
+✅ ชีท <b>2026-10</b> | ✅ ปี <b>พ.ศ. 2569-2579</b> อารบิค | ✅ Smart Sync ไม่แจ้งมั่ว | ✅ ชื่อสกุลครบ <b>ชัยเพชร</b> | ✅ ทีม 1 ใช้ <b>ผู้ช่วย 1+2</b> | ✅ เรียงตามยศ | ✅ PDF สะอาด
 <span id="currentSheetName" class="badge bg-dark ms-2"></span>
 <button class="btn btn-sm btn-outline-dark ms-2" data-bs-toggle="collapse" data-bs-target="#nameEditor"><i class="fa-solid fa-pen"></i> แก้ชื่อ-สกุล</button>
 </div>
@@ -68,12 +71,10 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 
 <div id="nameEditor" class="collapse mb-3">
 <div class="fullname-editor">
-<h6 class="fw-bold"><i class="fa-solid fa-users"></i> แก้ไขชื่อ-นามสกุลให้ถูกต้อง (ใช้ใน PDF)</h6>
-<p class="small text-muted mb-2">ถ้านามสกุลยังไม่ถูก แก้ที่นี่ได้เลย แล้วกดบันทึก ระบบจะจำไว้ใช้สร้างแบบฟอร์ม (จ.ส.ต.ปิติพงษ์ แก้เป็น ชัยเพชร แล้ว)</p>
+<h6 class="fw-bold"><i class="fa-solid fa-users"></i> แก้ไขชื่อ-นามสกุล</h6>
 <div class="row g-2" id="fullnameEditorBody"></div>
 <div class="mt-2">
 <button class="btn btn-sm btn-primary" onclick="saveFullNames()"><i class="fa-solid fa-save"></i> บันทึกชื่อ-สกุล</button>
-<span class="small text-muted ms-2">ลำดับยศ: พ.ต.ท. (100) > พ.ต.ต. (90) > ร.ต.อ. (80) > ร.ต.ท. (70) > ร.ต.ต. (60) > ด.ต. (40) > จ.ส.ต. (30)</span>
 </div>
 </div>
 </div>
@@ -88,12 +89,13 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 </div>
 <p class="mb-0 small text-muted" id="lblRecommendation"></p>
 <div class="mt-2 small"><span class="badge bg-primary">ชุดที่ 1 ผู้ช่วย (8 คน)</span> พ.ต.ท.หญิง พัชรี, อลิษา, พัชราภรณ์, กิตติศักดิ์, พรพิมล, นัสรอน, รณชัช, ธมนวรรณ | <span class="badge bg-info text-dark">ชุดที่ 2 ผู้ช่วย (3 คน)</span> พรณรงค์, สุริยา, ปิติพงษ์</div>
+<div class="mt-1 small text-muted" id="connectionLog"></div>
 </div>
 <div class="text-secondary small text-end">
 <div>เวรหลักเดือนก่อน: <b id="lblLastOfficer" class="text-primary">-</b></div>
 <div>ผู้ช่วย 1: <b id="lblLastAsst1" class="text-danger">-</b></div>
-<div class="mt-1"><label class="form-check-label small"><input type="checkbox" id="autoSyncCheck" class="form-check-input" checked> ออโต้ซิงค์ฉลาด (30 วิ)</label></div>
-<div class="small text-muted">Sheet: <a href="https://docs.google.com/spreadsheets/d/1Bloyb9AV60eZs7lWWge3fbD7kfphq8nbqSPYGJDJSi0/edit" target="_blank">เปิด Google Sheet</a></div>
+<div class="mt-1"><label class="form-check-label small"><input type="checkbox" id="autoSyncCheck" class="form-check-input" checked> ออโต้ซิงค์ (30 วิ)</label></div>
+<div class="small"><a href="https://docs.google.com/spreadsheets/d/1Bloyb9AV60eZs7lWWge3fbD7kfphq8nbqSPYGJDJSi0/edit" target="_blank">เปิด Google Sheet</a></div>
 </div>
 </div>
 </div>
@@ -107,10 +109,10 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// ==================== CONFIG ====================
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbziOVgTZsRHyBAGVml5WsWFTddEZV8UzLJzXKtqe6tG_0Iz5UF8a9Z9eNA1P1X1pI4Uzg/exec";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxviUKvhE-d6NNapLDUeGasUC3WFDDXediOOwzEy7BPYAedWoNxHg5G9XWtI3zyvmg5mA/exec";
 const SHEET_ID = "1Bloyb9AV60eZs7lWWge3fbD7kfphq8nbqSPYGJDJSi0";
 const SYNC_INTERVAL = 30000;
+const FETCH_TIMEOUT = 30000; // เพิ่มจาก 12 วิ เป็น 30 วิ
 
 var currentData = null;
 var isManualMode = false;
@@ -118,6 +120,7 @@ var isOfflineMode = false;
 var lastSyncTimestamp = 0;
 var lastContentHash = "";
 var syncIntervalId = null;
+var connectionAttempts = 0;
 
 var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
 var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
@@ -127,7 +130,6 @@ var assistantSet1 = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.�
 var assistantSet2 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
 var colorMap = {"พ.ต.ท.หญิง พัชรี": { bg: "#fce5cd", text: "#783f04" },"พ.ต.ท.หญิง อลิษา": { bg: "#ead1dc", text: "#4c1130" },"พ.ต.ต.หญิง พัชราภรณ์": { bg: "#fff2cc", text: "#7f6000" },"ร.ต.ท.กิตติศักดิ์": { bg: "#f4ccd3", text: "#741b47" },"พ.ต.ต.พรพิมล": { bg: "#d9ead3", text: "#274e13" },"ร.ต.อ.นัสรอน": { bg: "#c9daf8", text: "#1c4587" },"ร.ต.ท.รณชัช": { bg: "#d9d2e9", text: "#20124d" },"ร.ต.ต.พรณรงค์": { bg: "#d0e0e3", text: "#134f5c" },"ว่าที่ ร.ต.ต.สุริยา": { bg: "#f5e5d3", text: "#5b3f11" },"จ.ส.ต.ปิติพงษ์": { bg: "#e1d5e7", text: "#351c75" },"ด.ต.หญิง ธมนวรรณ": { bg: "#efefef", text: "#434343" }};
 var rankScore = {"พ.ต.ท.หญิง พัชรี": 100, "พ.ต.ท.หญิง อลิษา": 100,"พ.ต.ต.หญิง พัชราภรณ์": 90, "พ.ต.ต.พรพิมล": 90,"ร.ต.อ.นัสรอน": 80, "ร.ต.ท.กิตติศักดิ์": 70, "ร.ต.ท.รณชัช": 70,"ร.ต.ต.พรณรงค์": 60, "ว่าที่ ร.ต.ต.สุริยา": 55, "ด.ต.หญิง ธมนวรรณ": 40, "จ.ส.ต.ปิติพงษ์": 30};
-
 var FULL_NAME_MAP = {
   "ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร",
   "ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี",
@@ -163,6 +165,72 @@ function toThaiDigits(s){ return s.toString().split('').map(c=>{ let n=parseInt(
 function computeHash(roster){ try { var str = JSON.stringify(roster); var hash = 0; for(var i=0; i<str.length; i++){ var char = str.charCodeAt(i); hash = ((hash<<5)-hash)+char; hash = hash & hash; } return hash.toString() + "_" + str.length; } catch(e){ return ""; } }
 function sortByRank(names){ return [...names].sort((a,b) => { let scoreA = rankScore[a] || 0; let scoreB = rankScore[b] || 0; if(scoreB !== scoreA) return scoreB - scoreA; return a.localeCompare(b, 'th'); }); }
 
+// ===== ระบบ fetch ใหม่ ทนทาน มี retry =====
+async function fetchWithRetry(url, options = {}, retries = 3, timeout = FETCH_TIMEOUT) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      document.getElementById('retryInfo').innerText = retries > 1 ? `(ครั้งที่ ${i+1}/${retries})` : '';
+      updateSyncIndicator('syncing', i === 0 ? 'กำลังเชื่อม...' : `ลองใหม่ครั้งที่ ${i+1}...`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        cache: 'no-store'
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+      
+      document.getElementById('retryInfo').innerText = '';
+      return response;
+      
+    } catch (error) {
+      console.log(`Attempt ${i+1} failed:`, error.message);
+      document.getElementById('connectionLog').innerHTML = `<span class="text-warning">ลองครั้งที่ ${i+1} ไม่สำเร็จ: ${error.message}</span>`;
+      
+      if (i === retries - 1) {
+        // ครั้งสุดท้ายแล้วยัง fail
+        document.getElementById('retryInfo').innerText = '';
+        throw error;
+      }
+      
+      // รอก่อน retry (exponential backoff)
+      let waitTime = (i + 1) * 2000; // 2วิ, 4วิ, 6วิ
+      updateSyncIndicator('syncing', `รอ ${waitTime/1000} วิ ลองใหม่...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+}
+
+async function testConnection(){
+  Swal.fire({title: 'ทดสอบการเชื่อมต่อ', html: 'กำลังทดสอบ GAS...<br><small id="testLog"></small>', allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+  try {
+    let res = await fetchWithRetry(`${GAS_API_URL}?action=ping&_t=${Date.now()}`, {}, 2, 15000);
+    let data = await res.json();
+    Swal.close();
+    Swal.fire({icon: 'success', title: 'เชื่อมต่อสำเร็จ!', html: `GAS Online<br><small>Server: ${data.serverTime}<br>Sheet ID: ${data.sheetId}</small>`, timer: 3000});
+    document.getElementById('connectionLog').innerHTML = `<span class="text-success"><i class="fa-solid fa-check"></i> เชื่อมต่อสำเร็จ: ${new Date().toLocaleTimeString()}</span>`;
+    connectionAttempts = 0;
+    return true;
+  } catch(e){
+    Swal.close();
+    Swal.fire({
+      icon: 'error', 
+      title: 'เชื่อมต่อไม่ได้', 
+      html: `Error: ${e.message}<br><br><b>วิธีแก้:</b><br>1. ตรวจสอบ Deploy ใน script.google.com ว่า <b>Who has access = Anyone</b><br>2. ลอง Deploy ใหม่<br>3. ใช้โหมดออฟไลน์ไปก่อน`,
+      confirmButtonText: 'เข้าใจแล้ว'
+    });
+    document.getElementById('connectionLog').innerHTML = `<span class="text-danger"><i class="fa-solid fa-xmark"></i> เชื่อมต่อไม่ได้: ${e.message}</span>`;
+    return false;
+  }
+}
+
 function initFullNameEditor(){
   var all = Object.keys(FULL_NAME_MAP);
   var html = "";
@@ -187,14 +255,14 @@ function expandRank(fullName){ return FULL_NAME_MAP[fullName] || fullName; }
 function initYearMonthSelectors(){
   const yearSelect = document.getElementById('yearSelect');
   const monthSelect = document.getElementById('monthSelect');
-  const startCE = 2026; // 2569
-  const endCE = 2036; // 2579
+  const startCE = 2026;
+  const endCE = 2036;
   yearSelect.innerHTML = '';
   for(let y=startCE; y<=endCE; y++){
     let thaiYear = y + 543;
     let opt = document.createElement('option');
     opt.value = y;
-    opt.text = `พ.ศ. ${thaiYear}`; // เลขอารบิคตามขอ 2569
+    opt.text = `พ.ศ. ${thaiYear}`;
     if(y === 2026) opt.selected = true;
     yearSelect.appendChild(opt);
   }
@@ -226,16 +294,11 @@ window.onload = function(){
       Object.keys(parsed).forEach(k => { FULL_NAME_MAP[k] = parsed[k]; });
     }
   } catch(e){}
-  FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"] = "จ.ส.ต. ปิติพงษ์ ชัยเพชร"; // บังคับแก้
+  FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"] = "จ.ส.ต. ปิติพงษ์ ชัยเพชร";
   initFullNameEditor();
   initYearMonthSelectors();
   calculateNewRoster(true);
   startRealtimeSync();
-  document.addEventListener('visibilitychange', function(){
-    if(!document.hidden && document.getElementById('autoSyncCheck').checked && !isManualMode){
-      backgroundSyncCheck();
-    }
-  });
 };
 
 function startRealtimeSync(){
@@ -252,21 +315,20 @@ async function backgroundSyncCheck(){
   try{
     var year=parseInt(document.getElementById("yearSelect").value);
     var month=parseInt(document.getElementById("monthSelect").value);
-    let res=await fetch(`${GAS_API_URL}?action=checkUpdate&year=${year}&month=${month}&_t=${Date.now()}`, {cache: 'no-store'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    let res=await fetchWithRetry(`${GAS_API_URL}?action=checkUpdate&year=${year}&month=${month}&_t=${Date.now()}`, {}, 2, 15000);
     let checkData=await res.json();
     if(!checkData.hasData){ updateSyncIndicator('idle', 'ไม่มีข้อมูล'); return; }
-    if(checkData.contentHash && lastContentHash && checkData.contentHash === lastContentHash){ updateSyncIndicator('idle', 'ไม่มีแก้ไข'); document.getElementById('lastSyncTime').innerText = 'เช็คแล้วไม่มีแก้: ' + new Date().toLocaleTimeString('th-TH'); return; }
+    if(checkData.contentHash && lastContentHash && checkData.contentHash === lastContentHash){ updateSyncIndicator('idle', 'ไม่มีแก้ไข'); return; }
     if(checkData.lastModified && lastSyncTimestamp && checkData.lastModified <= lastSyncTimestamp){ updateSyncIndicator('idle', 'ไม่มีแก้ไข'); return; }
     if(checkData.lastModified > 0 && checkData.contentHash !== lastContentHash && lastContentHash !== ""){
-      let res2=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {cache: 'no-store'});
+      let res2=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {}, 2, 20000);
       let fullData=await res2.json();
       var newHash = computeHash(fullData.roster);
       if(newHash === lastContentHash){ updateSyncIndicator('idle', 'ไม่มีแก้ไข'); return; }
       Swal.fire({
         icon: 'info',
         title: 'พบข้อมูลใหม่!',
-        html: `ชีท <b>${year}-${month}</b> มีการแก้ไขจริง<br><small>เวลา: ${new Date(checkData.lastModified).toLocaleString('th-TH')}</small>`,
+        html: `ชีท <b>${year}-${month}</b> มีการแก้ไขจริง`,
         showCancelButton: true,
         confirmButtonText: 'โหลดใหม่เลย',
         cancelButtonText: 'เก็บของฉันไว้',
@@ -277,7 +339,6 @@ async function backgroundSyncCheck(){
           lastContentHash = newHash;
           lastSyncTimestamp = checkData.lastModified;
           renderWebPage();
-          Swal.fire({icon: 'success', title: 'โหลดข้อมูลใหม่แล้ว', timer: 1200, showConfirmButton: false});
         } else {
           lastContentHash = newHash;
           lastSyncTimestamp = checkData.lastModified;
@@ -295,12 +356,8 @@ function forceRealtimeSync(){ lastContentHash = ""; calculateNewRoster(true); }
 function updateSyncIndicator(status, text){
   const dot = document.getElementById('syncDot');
   const txt = document.getElementById('syncText');
-  const lastSync = document.getElementById('lastSyncTime');
   dot.className = 'sync-dot ' + status;
   txt.innerText = text;
-  if(status === 'idle' || status === ''){
-    lastSync.innerText = 'เช็คแล้ว: ' + new Date().toLocaleTimeString('th-TH');
-  }
 }
 function showLoadingPopup(title, text){
   Swal.fire({title: title, text: text, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
@@ -311,23 +368,21 @@ async function calculateNewRoster(showPopup){
   var year=parseInt(document.getElementById("yearSelect").value);
   var month=parseInt(document.getElementById("monthSelect").value);
   updateCurrentSheetName();
-  if(showPopup) showLoadingPopup('กำลังโหลด', `ดึงข้อมูลชีท ${year}-${month} จาก Sheet จริง...`);
+  if(showPopup) showLoadingPopup('กำลังโหลด', `ชีท ${year}-${month}...<br><small>Retry อัตโนมัติ 3 ครั้ง (GAS อาจช้า 10-20 วิ)</small>`);
   updateSyncIndicator('syncing', 'กำลังโหลด...');
-  document.getElementById("lblSyncStatus").innerHTML=`<b class='text-warning'><i class='fa-solid fa-spinner fa-spin'></i> กำลังโหลดชีท ${year}-${month}...</b>`;
+  document.getElementById("lblSyncStatus").innerHTML=`<b class='text-warning'><i class='fa-solid fa-spinner fa-spin'></i> กำลังโหลดชีท ${year}-${month}... (รอนานหน่อย GAS cold start)</b>`;
+  
   try{
-    let controller = new AbortController();
-    let timeoutId = setTimeout(()=>controller.abort(), 12000);
-    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {signal: controller.signal, cache: 'no-store'});
-    clearTimeout(timeoutId);
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    // ใช้ fetchWithRetry ใหม่ ไม่ abort เร็ว
+    let res=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {}, 3, FETCH_TIMEOUT);
     let data=await res.json();
     if(data.error) throw new Error(data.error);
-    currentData=data; isManualMode=false; isOfflineMode=false;
+    currentData=data; isManualMode=false; isOfflineMode=false; connectionAttempts = 0;
     lastSyncTimestamp = data.lastModified || 0;
     lastContentHash = data.contentHash || computeHash(data.roster) || "";
     if(data.fullNameMap){
       try {
-        var saved = localStorage.getItem('fullNameMap_FINAL_V23') || localStorage.getItem('fullNameMap_V20');
+        var saved = localStorage.getItem('fullNameMap_FINAL_V23');
         if(!saved){
           FULL_NAME_MAP = data.fullNameMap;
         }
@@ -343,24 +398,45 @@ async function calculateNewRoster(showPopup){
     document.getElementById("onlineBadge").classList.remove("d-none");
     if(!currentData.lockedFixes) currentData.lockedFixes={};
     renderWebPage();
-    document.getElementById("lblSyncStatus").innerHTML=data.isFromSheet
-      ?`<b class='text-success'><i class='fa-solid fa-cloud-check'></i> ออนไลน์ - ชีท ${year}-${month} (พ.ศ. ${year+543}) <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank" class="ms-2 badge bg-success text-decoration-none">เปิด Sheet</a></b>`
-      :`<b class='text-primary'>ข้อมูลใหม่ชีท ${year}-${month} - ยังไม่ได้บันทึก</b>`;
+    document.getElementById("lblSyncStatus").innerHTML=`<b class='text-success'><i class='fa-solid fa-cloud-check'></i> ออนไลน์ - ชีท ${year}-${month} (พ.ศ. ${year+543})</b>`;
+    document.getElementById('connectionLog').innerHTML = `<span class="text-success"><i class="fa-solid fa-check"></i> โหลดสำเร็จ: ${new Date().toLocaleTimeString()} (Server: ${data.serverTime||'-'})</span>`;
     if(data.prevContext){
       document.getElementById("lblLastOfficer").innerText=data.prevContext.lastOfficer||"-";
       document.getElementById("lblLastAsst1").innerText=data.prevContext.lastAsst1||"-";
       document.getElementById("lblRecommendation").innerText=data.prevContext.recommendation||"";
     }
-    updateSyncIndicator('idle', 'ซิงค์แล้ว');
+    updateSyncIndicator('idle', 'ออนไลน์');
     document.getElementById('lastSyncTime').innerText = 'ซิงค์ล่าสุด: ' + new Date().toLocaleTimeString('th-TH');
     if(showPopup){ Swal.close(); Swal.fire({icon: 'success', title: 'โหลดสำเร็จ', text: `ชีท ${year}-${month} (พ.ศ. ${year+543})`, timer: 1500, showConfirmButton: false}); }
     return data;
   }catch(e){
+    console.error('Load failed after retries:', e);
+    connectionAttempts++;
     document.getElementById("onlineBadge").classList.add("d-none");
     document.getElementById("offlineBadge").classList.remove("d-none");
     updateSyncIndicator('offline', 'ออฟไลน์');
-    if(showPopup){ Swal.fire({icon: 'warning', title: 'เชื่อม Sheet ไม่ได้', html: `${e.message}<br>ใช้โหมดออฟไลน์`}); }
-    generateLocalRoster();
+    document.getElementById('connectionLog').innerHTML = `<span class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> เชื่อมต่อไม่ได้หลังลอง 3 ครั้ง: ${e.message}</span>`;
+    
+    if(showPopup){
+      Swal.fire({
+        icon: 'warning',
+        title: 'เชื่อม Sheet ไม่ได้',
+        html: `ลองแล้ว 3 ครั้งยังไม่ได้<br><small>${e.message}</small><br><br><b>สาเหตุหลัก:</b><br>1. GAS Deploy ต้องตั้ง <b>Who has access = Anyone</b><br>2. GAS cold start ช้า<br>3. เน็ตช้า<br><br>จะเปิดโหมดออฟไลน์ให้`,
+        showCancelButton: true,
+        confirmButtonText: 'ลองอีกครั้ง',
+        cancelButtonText: 'ใช้ออฟไลน์',
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#6c757d'
+      }).then((result)=>{
+        if(result.isConfirmed){
+          calculateNewRoster(true);
+        } else {
+          generateLocalRoster();
+        }
+      });
+    } else {
+      generateLocalRoster();
+    }
     return null;
   }
 }
@@ -389,7 +465,7 @@ function generateLocalRoster(){
   isManualMode = false;
   isOfflineMode = true;
   document.getElementById("manualModeBadge").classList.add("d-none");
-  document.getElementById("lblSyncStatus").innerHTML=`<b class='text-warning'><i class='fa-solid fa-wifi-slash'></i> ออฟไลน์ - ชีท ${year}-${month}</b>`;
+  document.getElementById("lblSyncStatus").innerHTML=`<b class='text-warning'><i class='fa-solid fa-wifi-slash'></i> ออฟไลน์ - ชีท ${year}-${month} (ข้อมูลจำลอง)</b>`;
   renderWebPage();
 }
 function recalculateAllStats(rosterData, year, month){
@@ -429,13 +505,13 @@ function updateDutyPerson(ri, ct, newName, el){
 function renderSummaryTable(){ var h=""; currentData.summary.forEach(s=>{ h+=`<tr><td>${renderBadge(s.name)}</td><td>${s.main} วัน</td><td>${s.asst} วัน</td><td>${s.sleep} วัน</td><td><b class="text-primary">${s.total} วัน</b></td></tr>`; }); document.getElementById("summaryBody").innerHTML=h; }
 function renderWeekendStatsTable(){ var html=""; listMainOfficers.forEach(name=>{ var st=currentData.weekendStats[name]||{mainWeekendCount:0,mainDates:[],asst2WeekendCount:0,asst2Dates:[]}; html+=`<tr><td>${renderBadge(name)}</td><td class="text-center"><b class="text-success">${st.mainWeekendCount} วัน</b><br><small>${st.mainDates.join(", ")||"-"}</small></td><td class="text-center"><b class="text-primary">${st.asst2WeekendCount} วัน</b><br><small>${st.asst2Dates.join(", ")||"-"}</small></td></tr>`; }); document.getElementById("weekendStatsBody").innerHTML=html; }
 async function saveToGoogleSheet(){ 
-  if(isOfflineMode){ Swal.fire({icon: 'error', title: 'ออฟไลน์', text: 'บันทึกไม่ได้'}); return; }
+  if(isOfflineMode){ Swal.fire({icon: 'error', title: 'ออฟไลน์', text: 'บันทึกไม่ได้ ต้องออนไลน์ก่อน', showCancelButton: true, confirmButtonText: 'ลองเชื่อมใหม่', cancelButtonText: 'ปิด'}).then(r=>{ if(r.isConfirmed) calculateNewRoster(true); }); return; }
   if(!currentData) return;
   const year = currentData.year;
   const month = currentData.month;
-  Swal.fire({title: 'กำลังบันทึก', html: `บันทึกลงชีท <b>${year}-${month}</b>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+  Swal.fire({title: 'กำลังบันทึก', html: `บันทึกลงชีท <b>${year}-${month}</b><br><small>Retry อัตโนมัติ 3 ครั้ง</small>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   try{
-    let r=await fetch(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})});
+    let r=await fetchWithRetry(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})}, 3, 30000);
     let res=await r.json();
     if(res.error) throw new Error(res.error);
     isManualMode=false;
@@ -446,20 +522,18 @@ async function saveToGoogleSheet(){
     Swal.fire({icon: 'success', title: 'บันทึกสำเร็จ!', html: `ชีท <b>${res.result.sheetName}</b><br><a href="${res.result.sheetUrl}" target="_blank">เปิดดูใน Google Sheet</a>`, confirmButtonText: 'เปิด Sheet'}).then((r)=>{ if(r.isConfirmed) window.open(res.result.sheetUrl, '_blank'); });
     document.getElementById("lblSyncStatus").innerHTML=`<b class='text-success'><i class='fa-solid fa-cloud-check'></i> บันทึกแล้ว - ชีท ${res.result.sheetName}</b>`;
     updateSyncIndicator('idle', 'บันทึกแล้ว');
-  }catch(e){ Swal.close(); Swal.fire({icon: 'error', title: 'บันทึกล้มเหลว', html: e.message}); }
+  }catch(e){ Swal.close(); Swal.fire({icon: 'error', title: 'บันทึกล้มเหลว', html: `${e.message}<br><br>ลองใหม่หรือตรวจสอบ Deploy`}); }
 }
 
 function formatThaiDate(day, month, year){ return `${toThaiDigits(day)} ${THAI_MONTHS[month]} ${toThaiDigits(year+543)}`; }
 
 function exportDailyPDF(){
   if(!currentData || !currentData.roster){ Swal.fire({icon: 'error', title: 'ไม่มีข้อมูล'}); return; }
-  Swal.fire({title: 'กำลังสร้าง PDF', text: `สร้าง ${toThaiDigits(currentData.roster.length)} หน้า - ฉบับสมบูรณ์...`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
-  
+  Swal.fire({title: 'กำลังสร้าง PDF', text: `สร้าง ${toThaiDigits(currentData.roster.length)} หน้า...`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   setTimeout(()=>{
     let year = currentData.year; 
     let month = currentData.month;
     let html = `<html><head><meta charset="utf-8">
-      <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
       <style>
         @page { size: A4; margin: 10mm; }
         body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 17pt; line-height: 1.4; color: #000; margin:0; }
@@ -483,7 +557,6 @@ function exportDailyPDF(){
         .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 320px; margin: 0 6px; }
         .footer { text-align: center; font-size: 9pt; border-top: 1px dashed #999; padding-top: 3pt; margin-top: auto; }
       </style></head><body>`;
-
     currentData.roster.forEach((row, idx)=>{
       let thaiDate = formatThaiDate(row.day, month, year);
       let assistants = [row.asst1, row.asst2];
@@ -506,7 +579,6 @@ function exportDailyPDF(){
       if(!team2_p3){ let fb2 = assistantSet2.filter(n => n !== team2_p2 && !team1Set.has(n)); team2_p3 = fb2[0] || assistantSet2[0]; }
       let rankOnly1 = getRankOnly(row.main);
       let rankOnly2 = getRankOnly(team2_p1);
-
       html += `
         <div class="page">
           <div class="content">
@@ -550,14 +622,11 @@ function exportDailyPDF(){
         </div>`;
     });
     html += `</body></html>`;
-    
     Swal.close();
     let w = window.open('', '_blank');
     w.document.write(html);
     w.document.close();
     setTimeout(()=>{ w.focus(); w.print(); }, 800);
-    Swal.fire({icon: 'success', title: 'สร้าง PDF สำเร็จ FINAL V23', html: `ชีท ${year}-${month} จำนวน ${toThaiDigits(currentData.roster.length)} หน้า<br>เรียงผู้ช่วยตามยศ + แบบฟอร์มสะอาด`, timer: 2500, showConfirmButton: false});
-    
   }, 500);
 }
 </script>
