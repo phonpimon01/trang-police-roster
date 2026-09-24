@@ -3,37 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบจัดตารางเวร พฐ.จว.ตรัง</title>
+<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - V26 แก้จำนวนแล้วจัดใหม่</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
 :root { --app-primary: #1c4587; --app-dark: #120b2e; --bg-color: #f0f4f8; }
-body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); color: #1a202c; }
+body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 .app-navbar { background: linear-gradient(135deg, var(--app-primary) 0%, var(--app-dark) 100%); color: white; padding: 14px 22px; position: sticky; top: 0; z-index: 1050; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
 .app-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); margin-bottom: 18px; border: 1px solid #e2e8f0; }
 .table-container-app { max-height: 68vh; overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
 .table-app th { background: var(--app-dark); color: white; text-align: center; position: sticky; top: 0; font-weight: 600; font-size: 0.9rem; }
-.table-app td { text-align: center; padding: 8px; font-size: 0.9rem; }
+.table-app td { text-align: center; padding: 6px 8px; font-size: 0.9rem; }
 .select-name { border-radius: 20px; padding: 4px 12px; font-weight: 600; font-size: 0.85rem; border: 1px solid #cbd5e0; }
 .badge-person { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.84rem; display: inline-block; }
-.btn-app-action { border-radius: 10px; font-weight: 600; padding: 8px 16px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
-.btn-app-action:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.btn-app-action { border-radius: 10px; font-weight: 600; padding: 8px 16px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
 .manual-badge { background: #ff9800; color: #000; font-weight: 700; }
-.online-badge { background: #198754; color: white; font-weight: 600; padding: 5px 10px; border-radius: 20px; }
-.offline-badge { background: #dc3545; color: white; font-weight: 600; padding: 5px 10px; border-radius: 20px; }
-.sync-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: rgba(255,255,255,0.85); }
-.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
-.sync-dot.idle { background: #94a3b8; }
-.sync-dot.syncing { background: #fbbf24; animation: pulse 1.2s infinite; }
-.sync-dot.offline { background: #ef4444; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-.swal2-popup { font-family: 'Sarabun', sans-serif !important; border-radius: 20px !important; padding: 28px !important; }
-.swal2-title { font-weight: 700 !important; font-size: 1.4rem !important; }
-.swal2-html-container { font-size: 1rem !important; color: #475569 !important; line-height: 1.6 !important; }
+.online-badge { background: #198754; color: white; padding: 5px 10px; border-radius: 20px; }
+.offline-badge { background: #dc3545; color: white; padding: 5px 10px; border-radius: 20px; }
+.swal2-popup { font-family: 'Sarabun', sans-serif !important; border-radius: 20px !important; }
 .fullname-editor { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; }
 .status-bar { background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #1c4587; border-radius: 12px; padding: 12px 16px; }
+.summary-input { width: 60px; text-align: center; border-radius: 8px; border: 1px solid #cbd5e0; padding: 4px; font-weight: 700; font-size: 0.9rem; }
+.summary-input:focus { border-color: #1c4587; box-shadow: 0 0 0 2px rgba(28,69,135,0.15); outline: none; }
+.summary-input.changed { background: #fef3c7; border-color: #f59e0b; }
+.btn-rebalance { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border: none; border-radius: 12px; padding: 10px 18px; font-weight: 700; width: 100%; transition: all 0.2s; }
+.btn-rebalance:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124,58,237,0.3); color: white; }
+.edit-hint { font-size: 0.75rem; color: #64748b; background: #f1f5f9; padding: 8px 10px; border-radius: 8px; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -42,7 +39,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); color: #
 <i class="fa-solid fa-shield-halved text-warning" style="font-size:1.3rem;"></i>
 <span>ระบบจัดตารางเวร พฐ.จว.ตรัง</span>
 <span id="onlineBadge" class="online-badge d-none"><i class="fa-solid fa-circle-check me-1"></i>ออนไลน์</span>
-<span id="offlineBadge" class="offline-badge d-none"><i class="fa-solid fa-circle-xmark me-1"></i>ออฟไลน์</span>
+<span id="offlineBadge" class="offline-badge d-none"><i class="fa-solid fa-wifi-slash me-1"></i>ออฟไลน์</span>
 <span id="manualModeBadge" class="badge manual-badge d-none ms-1">แก้ไขแล้ว ยังไม่ได้บันทึก</span>
 </div>
 <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -50,16 +47,13 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); color: #
 <select id="yearSelect" class="form-select form-select-sm fw-bold" style="width:auto; min-width:130px; border-radius:10px 0 0 10px;" onchange="onYearChange()"></select>
 <select id="monthSelect" class="form-select form-select-sm fw-bold" style="width:auto; min-width:115px; border-radius:0 10px 10px 0; border-left:0;" onchange="calculateNewRoster(true)"></select>
 </div>
-<div class="d-flex gap-1">
-<button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster(true)" title="รีเฟรชข้อมูล"><i class="fa-solid fa-rotate"></i></button>
+<button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster(true)"><i class="fa-solid fa-rotate"></i></button>
 <button class="btn btn-sm btn-danger btn-app-action" onclick="exportDailyPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
 <button class="btn btn-sm btn-success btn-app-action" onclick="saveToGoogleSheet()"><i class="fa-solid fa-cloud-arrow-up"></i> บันทึก</button>
-</div>
 </div>
 </nav>
 
 <div class="container-fluid py-3 px-3">
-<!-- แถบสถานะแบบมืออาชีพ เรียบง่าย -->
 <div class="status-bar d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 <div class="d-flex align-items-center gap-3 flex-wrap">
 <div class="d-flex align-items-center gap-2">
@@ -69,11 +63,9 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); color: #
 </div>
 <span id="currentSheetName" class="badge bg-light text-dark border small">-</span>
 <span id="lastSyncTime" class="small text-muted"></span>
-<span id="syncIndicator" class="sync-indicator d-none"><span id="syncDot" class="sync-dot idle"></span><span id="syncText">พร้อม</span></span>
 </div>
 <div class="d-flex align-items-center gap-2">
-<span class="small text-muted">เดือนก่อนหน้า:</span>
-<b id="lblLastOfficer" class="small text-primary">-</b>
+<b id="lblLastOfficer" class="small text-primary d-none"></b>
 <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#nameEditor"><i class="fa-solid fa-pen"></i> แก้ชื่อสกุล</button>
 </div>
 </div>
@@ -81,39 +73,51 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); color: #
 <div id="nameEditor" class="collapse mb-3">
 <div class="fullname-editor">
 <div class="d-flex justify-content-between align-items-center mb-2">
-<h6 class="fw-bold mb-0"><i class="fa-solid fa-users me-1"></i> แก้ไขชื่อ-นามสกุล (ใช้ในแบบฟอร์ม PDF)</h6>
+<h6 class="fw-bold mb-0"><i class="fa-solid fa-users me-1"></i> แก้ไขชื่อ-นามสกุล</h6>
 <button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#nameEditor"><i class="fa-solid fa-xmark"></i></button>
 </div>
 <div class="row g-2" id="fullnameEditorBody"></div>
-<div class="mt-3 d-flex gap-2">
-<button class="btn btn-sm btn-primary" onclick="saveFullNames()"><i class="fa-solid fa-save me-1"></i> บันทึกชื่อ-สกุล</button>
-<span class="small text-muted align-self-center">แก้ไขแล้วกดบันทึก ระบบจะจำไว้ใช้ครั้งต่อไป</span>
-</div>
+<div class="mt-3"><button class="btn btn-sm btn-primary" onclick="saveFullNames()"><i class="fa-solid fa-save me-1"></i> บันทึกชื่อ-สกุล</button></div>
 </div>
 </div>
 
 <div class="row g-3">
-<div class="col-xl-8">
+<div class="col-xl-7">
 <div class="app-card p-3">
-<div class="d-flex justify-content-between align-items-center mb-3">
-<h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ <small class="text-muted" style="font-size:0.75em;" id="tableSubTitle"></small></h5>
-<span class="small text-muted">พ.ต.ท.หญิง พัชรี และคณะ - พฐ.จว.ตรัง</span>
+<div class="d-flex justify-content-between align-items-center mb-2">
+<h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ <small class="text-muted" id="tableSubTitle"></small></h5>
+<small class="text-muted"><i class="fa-solid fa-pen me-1"></i>แก้ manual ในตารางได้</small>
 </div>
-<div class="table-container-app"><table class="table table-bordered table-hover table-app mb-0"><thead><tr><th style="width:60px;">วันที่</th><th style="width:100px;">วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div>
+<div class="table-container-app"><table class="table table-bordered table-hover table-app mb-0"><thead><tr><th style="width:55px;">วันที่</th><th style="width:90px;">วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div>
 </div>
 </div>
-<div class="col-xl-4">
+<div class="col-xl-5">
 <div class="app-card p-3">
-<h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-simple me-2 text-primary"></i>สรุปภาระงาน</h6>
-<div class="table-responsive" style="max-height:320px; overflow-y:auto;"><table class="table table-striped table-bordered table-app mb-0"><thead class="table-dark"><tr><th>รายชื่อ</th><th>หลัก</th><th>ช่วย</th><th>นอน</th><th>รวม</th></tr></thead><tbody id="summaryBody"></tbody></table></div>
+<div class="d-flex justify-content-between align-items-center mb-2">
+<h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-simple me-2 text-primary"></i>สรุปภาระงาน</h6>
+<span class="badge bg-warning text-dark"><i class="fa-solid fa-lightbulb me-1"></i>แก้จำนวนได้</span>
+</div>
+<div class="edit-hint">
+<i class="fa-solid fa-circle-info me-1"></i> <b>วิธีใช้ใหม่:</b> แก้ตัวเลขในช่อง <b>หลัก / ช่วย / นอน</b> ตามที่ต้องการ แล้วกด <b>"จัดใหม่ตามจำนวน"</b> ระบบจะจัดเวรให้ตรงตามจำนวนที่กำหนดก่อน จากนั้นค่อยมาแก้ manual ในตารางซ้ายได้ต่อ
+</div>
+<div class="table-responsive" style="max-height:380px; overflow-y:auto;">
+<table class="table table-bordered table-app mb-0">
+<thead class="table-dark" style="position:sticky; top:0;"><tr><th style="width:38%;">รายชื่อ</th><th style="width:15%;">หลัก</th><th style="width:15%;">ช่วย</th><th style="width:15%;">นอน</th><th style="width:17%;">รวม</th></tr></thead>
+<tbody id="summaryBody"></tbody>
+</table>
+</div>
+<div class="mt-3 d-grid gap-2">
+<button class="btn-rebalance" onclick="applyCustomCounts()"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>จัดใหม่ตามจำนวนที่กำหนด</button>
+<div class="d-flex gap-2">
+<button class="btn btn-sm btn-outline-secondary flex-fill" onclick="resetSummaryInputs()"><i class="fa-solid fa-rotate-left me-1"></i>รีเซ็ตกลับ</button>
+<button class="btn btn-sm btn-outline-primary flex-fill" onclick="autoBalance()"><i class="fa-solid fa-scale-balanced me-1"></i>เกลี่ยเท่ากัน</button>
+</div>
+<div class="small text-muted text-center" id="customSummaryInfo"></div>
+</div>
 </div>
 <div class="app-card p-3">
-<h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-calendar-week me-2 text-success"></i>สถิติเวรเสาร์-อาทิตย์</h6>
-<div class="table-responsive" style="max-height:280px; overflow-y:auto;"><table class="table table-sm table-bordered table-app mb-0"><thead class="table-light text-center"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th></tr></thead><tbody id="weekendStatsBody"></tbody></table></div>
-</div>
-<div class="app-card p-3 bg-light">
-<div class="small text-muted"><i class="fa-solid fa-circle-info me-1"></i> <b>หมายเหตุ:</b> ทีมชุดเวรหลัก (ผู้ช่วย 1+2) จะเรียงตามยศอัตโนมัติก่อนพิมพ์แบบฟอร์ม</div>
-<div class="small mt-2"><a href="https://docs.google.com/spreadsheets/d/1Bloyb9AV60eZs7lWWge3fbD7kfphq8nbqSPYGJDJSi0/edit" target="_blank" class="text-decoration-none"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i>เปิด Google Sheet</a></div>
+<h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-calendar-week me-2 text-success"></i>สถิติเสาร์-อาทิตย์</h6>
+<div class="table-responsive" style="max-height:240px; overflow-y:auto;"><table class="table table-sm table-bordered table-app mb-0"><thead class="table-light text-center"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th></tr></thead><tbody id="weekendStatsBody"></tbody></table></div>
 </div>
 </div>
 </div>
@@ -122,16 +126,14 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); color: #
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwXzVuwNFfrY9xZKTfZRSYKRSzii2N7jg9XEa791bIdAhfZeUcAyzOTIjTdFlqKwr8aIg/exec";
-const SYNC_INTERVAL = 30000;
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyZJVTzHZ_P1WtytXE6-Z6dRIk7Y5vZrQg_-M654N6rZ31NNm5zg78w37YFOsUiiKCzRg/exec";
 const FETCH_TIMEOUT = 30000;
-
 var currentData = null;
 var isManualMode = false;
 var isOfflineMode = false;
 var lastSyncTimestamp = 0;
 var lastContentHash = "";
-var syncIntervalId = null;
+var originalSummary = null;
 
 var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
 var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
@@ -176,7 +178,6 @@ function toThaiDigits(s){ return s.toString().split('').map(c=>{ let n=parseInt(
 function computeHash(roster){ try { var str = JSON.stringify(roster); var hash = 0; for(var i=0; i<str.length; i++){ var char = str.charCodeAt(i); hash = ((hash<<5)-hash)+char; hash = hash & hash; } return hash.toString() + "_" + str.length; } catch(e){ return ""; } }
 function sortByRank(names){ return [...names].sort((a,b) => { let scoreA = rankScore[a] || 0; let scoreB = rankScore[b] || 0; if(scoreB !== scoreA) return scoreB - scoreA; return a.localeCompare(b, 'th'); }); }
 
-// ระบบ fetch แบบมืออาชีพ ไม่โชว์เทคนิคให้ผู้ใช้เห็น
 async function fetchWithRetry(url, options = {}, retries = 3, timeout = FETCH_TIMEOUT) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -209,7 +210,7 @@ function saveFullNames(){
     if(el) FULL_NAME_MAP[shortName] = el.value.trim();
   });
   localStorage.setItem('fullNameMap_FINAL_V23', JSON.stringify(FULL_NAME_MAP));
-  Swal.fire({icon: 'success', title: 'บันทึกเรียบร้อย', text: 'ชื่อ-นามสกุลจะถูกใช้ในการพิมพ์แบบฟอร์มครั้งต่อไป', timer: 1800, showConfirmButton: false});
+  Swal.fire({icon: 'success', title: 'บันทึกเรียบร้อย', timer: 1500, showConfirmButton: false});
 }
 function expandRank(fullName){ return FULL_NAME_MAP[fullName] || fullName; }
 
@@ -257,67 +258,8 @@ window.onload = function(){
   initFullNameEditor();
   initYearMonthSelectors();
   calculateNewRoster(true);
-  startRealtimeSync();
 };
 
-function startRealtimeSync(){
-  if(syncIntervalId) clearInterval(syncIntervalId);
-  syncIntervalId = setInterval(()=>{
-    if(document.getElementById('autoSyncCheck') && !document.getElementById('autoSyncCheck').checked) return;
-    if(!isManualMode && !isOfflineMode){
-      backgroundSyncCheck();
-    }
-  }, SYNC_INTERVAL);
-}
-async function backgroundSyncCheck(){
-  if(isManualMode || isOfflineMode) return;
-  try{
-    var year=parseInt(document.getElementById("yearSelect").value);
-    var month=parseInt(document.getElementById("monthSelect").value);
-    let res=await fetchWithRetry(`${GAS_API_URL}?action=checkUpdate&year=${year}&month=${month}&_t=${Date.now()}`, {}, 2, 15000);
-    let checkData=await res.json();
-    if(!checkData.hasData) return;
-    if(checkData.contentHash && lastContentHash && checkData.contentHash === lastContentHash) return;
-    if(checkData.lastModified && lastSyncTimestamp && checkData.lastModified <= lastSyncTimestamp) return;
-    if(checkData.lastModified > 0 && checkData.contentHash !== lastContentHash && lastContentHash !== ""){
-      let res2=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {}, 2, 20000);
-      let fullData=await res2.json();
-      var newHash = computeHash(fullData.roster);
-      if(newHash === lastContentHash) return;
-      Swal.fire({
-        icon: 'info',
-        title: 'พบข้อมูลใหม่',
-        html: `มีการปรับปรุงตารางเวรเดือน <b>${year}-${month}</b><br><small>ต้องการโหลดข้อมูลใหม่หรือไม่?</small>`,
-        showCancelButton: true,
-        confirmButtonText: 'โหลดใหม่',
-        cancelButtonText: 'ไว้ทีหลัง',
-        confirmButtonColor: '#1c4587'
-      }).then((result)=>{
-        if(result.isConfirmed){
-          currentData = fullData;
-          lastContentHash = newHash;
-          lastSyncTimestamp = checkData.lastModified;
-          renderWebPage();
-        } else {
-          lastContentHash = newHash;
-          lastSyncTimestamp = checkData.lastModified;
-        }
-      });
-    }
-  }catch(e){}
-}
-
-function updateSyncIndicator(status, text){}
-
-function showLoadingPopup(title, text){
-  Swal.fire({
-    title: title,
-    html: text,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    didOpen: () => { Swal.showLoading(); }
-  });
-}
 function renderBadge(name){ var s=colorMap[name]||{bg:"#e0e0e0",text:"#000"}; return `<span class="badge-person" style="background:${s.bg};color:${s.text}">${name}</span>`; }
 
 async function calculateNewRoster(showPopup){
@@ -325,16 +267,9 @@ async function calculateNewRoster(showPopup){
   var month=parseInt(document.getElementById("monthSelect").value);
   updateCurrentSheetName();
   if(showPopup) {
-    Swal.fire({
-      title: 'กำลังโหลดข้อมูล',
-      html: `กำลังดึงข้อมูลเดือน <b>${THAI_MONTHS[month]} พ.ศ. ${year+543}</b><br><small class="text-muted">กรุณารอสักครู่...</small>`,
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      didOpen: () => { Swal.showLoading(); }
-    });
+    Swal.fire({title: 'กำลังโหลดข้อมูล', html: `เดือน <b>${THAI_MONTHS[month]} พ.ศ. ${year+543}</b>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   }
   document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted"><i class="fa-solid fa-spinner fa-spin me-1"></i>กำลังโหลด...</span>`;
-  
   try{
     let res=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {}, 3, FETCH_TIMEOUT);
     let data=await res.json();
@@ -357,28 +292,17 @@ async function calculateNewRoster(showPopup){
     document.getElementById("offlineBadge").classList.add("d-none");
     document.getElementById("onlineBadge").classList.remove("d-none");
     if(!currentData.lockedFixes) currentData.lockedFixes={};
+    originalSummary = JSON.parse(JSON.stringify(data.summary));
     renderWebPage();
-    document.getElementById("lblSyncStatus").innerHTML=`<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>เชื่อมต่อแล้ว</span>`;
-    if(data.prevContext){
-      document.getElementById("lblLastOfficer").innerText=data.prevContext.lastOfficer||"-";
-    }
+    document.getElementById("lblSyncStatus").innerHTML=`<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>ออนไลน์</span>`;
     document.getElementById('lastSyncTime').innerText = new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
     if(showPopup){ Swal.close(); }
     return data;
   }catch(e){
     document.getElementById("onlineBadge").classList.add("d-none");
     document.getElementById("offlineBadge").classList.remove("d-none");
-    document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted"><i class="fa-solid fa-wifi-slash me-1"></i>โหมดออฟไลน์</span>`;
-    
-    if(showPopup){
-      Swal.fire({
-        icon: 'info',
-        title: 'โหมดออฟไลน์',
-        html: `ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ในขณะนี้<br><small class="text-muted">ระบบจะแสดงข้อมูลจากเครื่องของคุณ</small>`,
-        timer: 2500,
-        showConfirmButton: false
-      });
-    }
+    document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted">ออฟไลน์</span>`;
+    if(showPopup){ Swal.close(); }
     generateLocalRoster();
     return null;
   }
@@ -418,6 +342,7 @@ function recalculateAllStats(rosterData, year, month){
   rosterData.forEach(r=>{ if(r.dayName==="วันเสาร์"||r.dayName==="วันอาทิตย์"){ if(wMap[r.main]){ wMap[r.main].mainCount++; wMap[r.main].mainDates.push(r.day); } if(wMap[r.asst2]){ wMap[r.asst2].asst2Count++; wMap[r.asst2].asst2Dates.push(r.day); } } });
   var weekendStats={}; listMainOfficers.forEach(n=>{ weekendStats[n]={mainWeekendCount:wMap[n].mainCount,mainDates:wMap[n].mainDates,asst2WeekendCount:wMap[n].asst2Count,asst2Dates:wMap[n].asst2Dates}; });
   currentData = { year: year, month: month, totalDays: new Date(year, month, 0).getDate(), roster: rosterData, summary: summary, weekendStats: weekendStats, prevContext: {lastOfficer:"", lastAsst1:"", recommendation:"ออฟไลน์"}, allOfficers: allOfficers, mainOfficers: listMainOfficers, isFromSheet: false, lastModified: 0, contentHash: computeHash(rosterData), fullNameMap: FULL_NAME_MAP, lockedFixes: currentData? currentData.lockedFixes : {} };
+  originalSummary = JSON.parse(JSON.stringify(summary));
   lastContentHash = currentData.contentHash;
 }
 function renderWebPage(){
@@ -442,14 +367,269 @@ function updateDutyPerson(ri, ct, newName, el){
   renderWeekendStatsTable();
   lastContentHash = computeHash(currentData.roster);
 }
-function renderSummaryTable(){ var h=""; currentData.summary.forEach(s=>{ h+=`<tr><td>${renderBadge(s.name)}</td><td class="text-center">${s.main}</td><td class="text-center">${s.asst}</td><td class="text-center">${s.sleep}</td><td class="text-center"><b class="text-primary">${s.total}</b></td></tr>`; }); document.getElementById("summaryBody").innerHTML=h; }
+
+// ===== ระบบใหม่: แก้จำนวนในสรุป แล้วจัดใหม่ =====
+function renderSummaryTable(){
+  if(!currentData || !currentData.summary) return;
+  var h="";
+  currentData.summary.forEach((s, idx)=>{
+    var total = s.main + s.asst + s.sleep;
+    h+=`<tr>
+      <td style="text-align:left;">${renderBadge(s.name)}</td>
+      <td><input type="number" class="summary-input" id="input_main_${idx}" value="${s.main}" min="0" max="${currentData.totalDays}" onchange="onSummaryInputChange(${idx}, 'main', this.value)" oninput="markChanged(this)"></td>
+      <td><input type="number" class="summary-input" id="input_asst_${idx}" value="${s.asst}" min="0" max="${currentData.totalDays*2}" onchange="onSummaryInputChange(${idx}, 'asst', this.value)" oninput="markChanged(this)"></td>
+      <td><input type="number" class="summary-input" id="input_sleep_${idx}" value="${s.sleep}" min="0" max="${currentData.totalDays}" onchange="onSummaryInputChange(${idx}, 'sleep', this.value)" oninput="markChanged(this)"></td>
+      <td><b class="text-primary" id="total_${idx}">${total}</b></td>
+    </tr>`;
+  });
+  document.getElementById("summaryBody").innerHTML=h;
+  updateCustomInfo();
+}
+
+function markChanged(el){
+  el.classList.add('changed');
+  var idx = parseInt(el.id.split('_')[2]);
+  var main = parseInt(document.getElementById(`input_main_${idx}`).value) || 0;
+  var asst = parseInt(document.getElementById(`input_asst_${idx}`).value) || 0;
+  var sleep = parseInt(document.getElementById(`input_sleep_${idx}`).value) || 0;
+  document.getElementById(`total_${idx}`).innerText = main + asst + sleep;
+  updateCustomInfo();
+}
+
+function onSummaryInputChange(idx, type, value){
+  value = parseInt(value) || 0;
+  if(value < 0) value = 0;
+  document.getElementById(`input_${type}_${idx}`).value = value;
+  document.getElementById(`input_${type}_${idx}`).classList.add('changed');
+  var main = parseInt(document.getElementById(`input_main_${idx}`).value) || 0;
+  var asst = parseInt(document.getElementById(`input_asst_${idx}`).value) || 0;
+  var sleep = parseInt(document.getElementById(`input_sleep_${idx}`).value) || 0;
+  document.getElementById(`total_${idx}`).innerText = main + asst + sleep;
+  updateCustomInfo();
+}
+
+function updateCustomInfo(){
+  if(!currentData) return;
+  var totalDays = currentData.totalDays;
+  var sumMain = 0, sumAsst = 0, sumSleep = 0;
+  currentData.summary.forEach((s, idx)=>{
+    var elM = document.getElementById(`input_main_${idx}`);
+    var elA = document.getElementById(`input_asst_${idx}`);
+    var elS = document.getElementById(`input_sleep_${idx}`);
+    if(elM) sumMain += parseInt(elM.value) || 0;
+    if(elA) sumAsst += parseInt(elA.value) || 0;
+    if(elS) sumSleep += parseInt(elS.value) || 0;
+  });
+  var info = `รวมที่กำหนด: หลัก ${sumMain}/${totalDays} | ช่วย ${sumAsst}/${totalDays*2} | นอน ${sumSleep}/${totalDays}`;
+  var isValid = (sumMain === totalDays);
+  if(!isValid){
+    info += `<br><span class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> หลักต้องรวม = ${totalDays} วัน (ตอนนี้ ${sumMain})</span>`;
+  } else {
+    info += `<br><span class="text-success"><i class="fa-solid fa-check"></i> พร้อมจัดใหม่</span>`;
+  }
+  document.getElementById('customSummaryInfo').innerHTML = info;
+}
+
+function resetSummaryInputs(){
+  if(!originalSummary) return;
+  originalSummary.forEach((s, idx)=>{
+    var elM = document.getElementById(`input_main_${idx}`);
+    var elA = document.getElementById(`input_asst_${idx}`);
+    var elS = document.getElementById(`input_sleep_${idx}`);
+    if(elM){ elM.value = s.main; elM.classList.remove('changed'); }
+    if(elA){ elA.value = s.asst; elA.classList.remove('changed'); }
+    if(elS){ elS.value = s.sleep; elS.classList.remove('changed'); }
+    document.getElementById(`total_${idx}`).innerText = s.main + s.asst + s.sleep;
+  });
+  updateCustomInfo();
+}
+
+function autoBalance(){
+  if(!currentData) return;
+  var totalDays = currentData.totalDays;
+  var mainCount = listMainOfficers.length;
+  var asst1Count = listAsst1.length;
+  
+  currentData.summary.forEach((s, idx)=>{
+    var isMainOfficer = listMainOfficers.includes(s.name);
+    var isAsst1Officer = listAsst1.includes(s.name);
+    var isThamonwan = s.name === "ด.ต.หญิง ธมนวรรณ";
+    
+    var targetMain = 0, targetAsst = 0, targetSleep = 0;
+    
+    if(isMainOfficer){
+      targetMain = Math.floor(totalDays / mainCount);
+      if(idx < totalDays % mainCount) targetMain++;
+      targetAsst = Math.floor((totalDays - 10) / mainCount);
+    }
+    if(isAsst1Officer){
+      targetAsst = Math.floor(totalDays / asst1Count);
+      if(listAsst1.indexOf(s.name) < totalDays % asst1Count) targetAsst++;
+      targetSleep = targetAsst;
+    }
+    if(isThamonwan){
+      targetAsst = 10;
+      targetSleep = 10;
+    }
+    
+    var elM = document.getElementById(`input_main_${idx}`);
+    var elA = document.getElementById(`input_asst_${idx}`);
+    var elS = document.getElementById(`input_sleep_${idx}`);
+    if(elM){ elM.value = targetMain; elM.classList.add('changed'); }
+    if(elA){ elA.value = targetAsst; elA.classList.add('changed'); }
+    if(elS){ elS.value = targetSleep; elS.classList.add('changed'); }
+    document.getElementById(`total_${idx}`).innerText = targetMain + targetAsst + targetSleep;
+  });
+  updateCustomInfo();
+  Swal.fire({icon: 'info', title: 'เกลี่ยเท่ากันแล้ว', text: 'ระบบเกลี่ยจำนวนให้ใกล้เคียงกัน จากนั้นกด "จัดใหม่ตามจำนวน"', timer: 1500, showConfirmButton: false});
+}
+
+function applyCustomCounts(){
+  if(!currentData) return;
+  
+  var totalDays = currentData.totalDays;
+  var desiredMain = {};
+  var desiredAsst = {};
+  var desiredSleep = {};
+  var sumMain = 0;
+  
+  currentData.summary.forEach((s, idx)=>{
+    var m = parseInt(document.getElementById(`input_main_${idx}`).value) || 0;
+    var a = parseInt(document.getElementById(`input_asst_${idx}`).value) || 0;
+    var sl = parseInt(document.getElementById(`input_sleep_${idx}`).value) || 0;
+    desiredMain[s.name] = m;
+    desiredAsst[s.name] = a;
+    desiredSleep[s.name] = sl;
+    sumMain += m;
+  });
+  
+  if(sumMain !== totalDays){
+    Swal.fire({icon: 'warning', title: 'จำนวนไม่ถูกต้อง', html: `รวมเวรหลักต้อง = <b>${totalDays} วัน</b><br>ตอนนี้รวม = <b>${sumMain} วัน</b><br>กรุณาแก้ให้ครบ ${totalDays} ก่อน`});
+    return;
+  }
+  
+  Swal.fire({title: 'กำลังจัดใหม่', html: `จัดเวรตามจำนวนที่กำหนด<br><small>หลัก ${sumMain} วัน - ระบบจะจัดให้ตรงตามที่ระบุ</small>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+  
+  setTimeout(()=>{
+    try {
+      var newRoster = redistributeRoster(desiredMain, desiredAsst, desiredSleep, totalDays);
+      currentData.roster = newRoster;
+      recalculateAllStats(newRoster, currentData.year, currentData.month);
+      renderWebPage();
+      // ล้างสีเหลืองที่ mark ไว้
+      document.querySelectorAll('.summary-input.changed').forEach(el => el.classList.remove('changed'));
+      
+      Swal.fire({icon: 'success', title: 'จัดใหม่สำเร็จ', html: `จัดเวรตามจำนวนที่กำหนดแล้ว<br><small>ถ้ายังไม่พอดี สามารถแก้ต่อในตารางซ้ายได้เลย (Manual)</small>`, timer: 2500, showConfirmButton: false});
+      isManualMode = true;
+      document.getElementById("manualModeBadge").classList.remove("d-none");
+    } catch(e){
+      Swal.fire({icon: 'error', title: 'จัดไม่ได้', text: e.message});
+    }
+  }, 600);
+}
+
+function redistributeRoster(desiredMain, desiredAsst, desiredSleep, totalDays){
+  var dayNamesTH = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+  var year = currentData.year;
+  var month = currentData.month;
+  var thamonwanDays = []; var cur = 1; var use3 = false;
+  while(cur <= totalDays && thamonwanDays.length < 10){ thamonwanDays.push(cur); cur += use3? 4 : 3; use3 = !use3; }
+  
+  var remainingMain = {...desiredMain};
+  var remainingAsst = {...desiredAsst};
+  var remainingSleep = {...desiredSleep};
+  
+  var newRoster = [];
+  
+  for(var d=1; d<=totalDays; d++){
+    var dt = new Date(year, month-1, d);
+    var dayName = dayNamesTH[dt.getDay()];
+    var isWeekend = dt.getDay()===0 || dt.getDay()===6;
+    var usedToday = new Set();
+    
+    // 1. เลือกเวรหลัก
+    var mainCandidates = listMainOfficers
+      .filter(n => (remainingMain[n]||0) > 0)
+      .sort((a,b) => {
+        if(isWeekend){
+          // เสาร์อาทิตย์ หลีกเลี่ยง พัชรี พรพิมล ถ้าเหลือตัวเลือกอื่น
+          var aIsAvoid = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ต.พรพิมล"].includes(a);
+          var bIsAvoid = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ต.พรพิมล"].includes(b);
+          if(aIsAvoid && !bIsAvoid && remainingMain[a] < totalDays) return 1;
+          if(!aIsAvoid && bIsAvoid && remainingMain[b] < totalDays) return -1;
+        }
+        var diff = (remainingMain[b]||0) - (remainingMain[a]||0);
+        if(diff !== 0) return diff;
+        return (rankScore[b]||0) - (rankScore[a]||0);
+      });
+    // ถ้าไม่มีคนเหลือตาม desired ให้เอาคนที่เหลือเยอะสุด
+    if(mainCandidates.length === 0){
+      mainCandidates = [...listMainOfficers].sort((a,b) => (remainingMain[b]||0) - (remainingMain[a]||0));
+    }
+    var selectedMain = mainCandidates[0] || listMainOfficers[0];
+    remainingMain[selectedMain] = (remainingMain[selectedMain]||0) - 1;
+    usedToday.add(selectedMain);
+    
+    // 2. เลือกผู้ช่วย 1 (จาก 3 คน)
+    var asst1Candidates = listAsst1
+      .filter(n => !usedToday.has(n) && (remainingAsst[n]||0) > 0)
+      .sort((a,b) => (remainingAsst[b]||0) - (remainingAsst[a]||0));
+    if(asst1Candidates.length === 0){
+      asst1Candidates = listAsst1.filter(n => !usedToday.has(n)).sort((a,b) => (remainingAsst[b]||0) - (remainingAsst[a]||0));
+    }
+    var selectedAsst1 = asst1Candidates[0] || listAsst1[0];
+    if(remainingAsst[selectedAsst1] > 0) remainingAsst[selectedAsst1]--;
+    usedToday.add(selectedAsst1);
+    
+    // 3. เลือกผู้ช่วย 2
+    var selectedAsst2;
+    if(thamonwanDays.includes(d)){
+      selectedAsst2 = "ด.ต.หญิง ธมนวรรณ";
+      if(remainingAsst[selectedAsst2] > 0) remainingAsst[selectedAsst2]--;
+      usedToday.add(selectedAsst2);
+    } else {
+      var asst2Candidates = listMainOfficers
+        .filter(n => !usedToday.has(n) && (remainingAsst[n]||0) > 0)
+        .sort((a,b) => (remainingAsst[b]||0) - (remainingAsst[a]||0));
+      if(asst2Candidates.length === 0){
+        asst2Candidates = listMainOfficers.filter(n => !usedToday.has(n)).sort((a,b) => (remainingAsst[b]||0) - (remainingAsst[a]||0));
+      }
+      selectedAsst2 = asst2Candidates[0] || listMainOfficers[0];
+      if(remainingAsst[selectedAsst2] > 0) remainingAsst[selectedAsst2]--;
+      usedToday.add(selectedAsst2);
+    }
+    
+    // 4. เลือกเวรนอน
+    var selectedSleep;
+    if(thamonwanDays.includes(d)){
+      selectedSleep = "ด.ต.หญิง ธมนวรรณ";
+      if(remainingSleep[selectedSleep] > 0) remainingSleep[selectedSleep]--;
+    } else {
+      var sleepCandidates = listAsst1
+        .filter(n => !usedToday.has(n) && (remainingSleep[n]||0) > 0)
+        .sort((a,b) => (remainingSleep[b]||0) - (remainingSleep[a]||0));
+      if(sleepCandidates.length === 0){
+        sleepCandidates = listAsst1.filter(n => !usedToday.has(n)).sort((a,b) => (remainingSleep[b]||0) - (remainingSleep[a]||0));
+        if(sleepCandidates.length === 0){
+          sleepCandidates = listSleep.filter(n => !usedToday.has(n));
+        }
+      }
+      selectedSleep = sleepCandidates[0] || listAsst1[0];
+      if(remainingSleep[selectedSleep] > 0) remainingSleep[selectedSleep]--;
+    }
+    
+    newRoster.push({ day: d, dayName: dayName, main: selectedMain, asst1: selectedAsst1, asst2: selectedAsst2, sleep: selectedSleep });
+  }
+  
+  return newRoster;
+}
+
 function renderWeekendStatsTable(){ var html=""; listMainOfficers.forEach(name=>{ var st=currentData.weekendStats[name]||{mainWeekendCount:0,mainDates:[],asst2WeekendCount:0,asst2Dates:[]}; html+=`<tr><td>${renderBadge(name)}</td><td class="text-center"><b class="text-success">${st.mainWeekendCount}</b><br><small class="text-muted">${st.mainDates.join(", ")||"-"}</small></td><td class="text-center"><b class="text-primary">${st.asst2WeekendCount}</b><br><small class="text-muted">${st.asst2Dates.join(", ")||"-"}</small></td></tr>`; }); document.getElementById("weekendStatsBody").innerHTML=html; }
 async function saveToGoogleSheet(){ 
-  if(isOfflineMode){ Swal.fire({icon: 'warning', title: 'ออฟไลน์', text: 'กรุณาเชื่อมต่ออินเทอร์เน็ตก่อนบันทึกข้อมูล', confirmButtonColor: '#1c4587'}); return; }
+  if(isOfflineMode){ Swal.fire({icon: 'warning', title: 'ออฟไลน์', text: 'กรุณาเชื่อมต่อก่อนบันทึก'}); return; }
   if(!currentData) return;
-  const year = currentData.year;
-  const month = currentData.month;
-  Swal.fire({title: 'กำลังบันทึก', html: `บันทึกข้อมูลเดือน <b>${THAI_MONTHS[month]} พ.ศ. ${year+543}</b>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+  const year = currentData.year; const month = currentData.month;
+  Swal.fire({title: 'กำลังบันทึก', html: `เดือน <b>${THAI_MONTHS[month]} พ.ศ. ${year+543}</b>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   try{
     let r=await fetchWithRetry(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})}, 3, 30000);
     let res=await r.json();
@@ -458,42 +638,16 @@ async function saveToGoogleSheet(){
     document.getElementById("manualModeBadge").classList.add("d-none");
     lastContentHash = res.result.contentHash || computeHash(currentData.roster);
     lastSyncTimestamp = res.result.lastModified || Date.now();
-    Swal.fire({icon: 'success', title: 'บันทึกสำเร็จ', text: `บันทึกข้อมูลเดือน ${THAI_MONTHS[month]} เรียบร้อยแล้ว`, timer: 2000, showConfirmButton: false});
-  }catch(e){ Swal.fire({icon: 'error', title: 'บันทึกไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง', confirmButtonColor: '#1c4587'}); }
+    Swal.fire({icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false});
+  }catch(e){ Swal.fire({icon: 'error', title: 'บันทึกไม่สำเร็จ', text: 'ลองใหม่อีกครั้ง'}); }
 }
-
 function formatThaiDate(day, month, year){ return `${toThaiDigits(day)} ${THAI_MONTHS[month]} ${toThaiDigits(year+543)}`; }
-
 function exportDailyPDF(){
-  if(!currentData || !currentData.roster){ Swal.fire({icon: 'warning', title: 'ไม่มีข้อมูล', text: 'กรุณาโหลดข้อมูลก่อนพิมพ์'}); return; }
-  Swal.fire({title: 'กำลังสร้างเอกสาร', html: `กำลังจัดทำแบบฟอร์มจำนวน <b>${currentData.roster.length} หน้า</b>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+  if(!currentData || !currentData.roster){ Swal.fire({icon: 'warning', title: 'ไม่มีข้อมูล'}); return; }
+  Swal.fire({title: 'กำลังสร้างเอกสาร', html: `จำนวน <b>${currentData.roster.length} หน้า</b>`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   setTimeout(()=>{
-    let year = currentData.year; 
-    let month = currentData.month;
-    let html = `<html><head><meta charset="utf-8">
-      <style>
-        @page { size: A4; margin: 10mm; }
-        body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 17pt; line-height: 1.4; color: #000; margin:0; }
-        .page { width: 210mm; height: 297mm; margin: 0 auto; padding: 10mm 14mm 8mm 14mm; box-sizing: border-box; page-break-after: always; position: relative; display: flex; flex-direction: column; border: 2.5px solid #000; }
-        .page:last-child { page-break-after: avoid; }
-        .content { flex: 1; }
-        .header { text-align: center; font-size: 20pt; font-weight: bold; margin-bottom: 6pt; }
-        .subheader { font-size: 16pt; }
-        .field { margin-top: 5pt; font-size: 16pt; }
-        .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 140px; padding: 0 4px; }
-        .dotted-long { min-width: 240px; }
-        .dotted-date { min-width: 170px; }
-        .dotted-time { min-width: 60px; }
-        .date-time-line { margin-top: 5pt; font-size: 16pt; }
-        .team { margin-top: 10pt; }
-        .team-title { font-weight: bold; font-size: 16pt; margin-bottom: 3pt; }
-        .team-list { margin-left: 18pt; line-height: 1.8; font-size: 16pt; }
-        .report { margin-top: 10pt; font-size: 15.5pt; line-height: 1.5; }
-        .report-list { margin-left: 18pt; line-height: 1.6; }
-        .signature { margin-top: 14pt; font-size: 15pt; line-height: 2.3; }
-        .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 320px; margin: 0 6px; }
-        .footer { text-align: center; font-size: 9pt; border-top: 1px dashed #999; padding-top: 3pt; margin-top: auto; }
-      </style></head><body>`;
+    let year = currentData.year; let month = currentData.month;
+    let html = `<html><head><meta charset="utf-8"><style>@page { size: A4; margin: 10mm; } body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 17pt; line-height: 1.4; color: #000; margin:0; } .page { width: 210mm; height: 297mm; margin: 0 auto; padding: 10mm 14mm 8mm 14mm; box-sizing: border-box; page-break-after: always; position: relative; display: flex; flex-direction: column; border: 2.5px solid #000; } .page:last-child { page-break-after: avoid; } .content { flex: 1; } .header { text-align: center; font-size: 20pt; font-weight: bold; margin-bottom: 6pt; } .subheader { font-size: 16pt; } .field { margin-top: 5pt; font-size: 16pt; } .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 140px; padding: 0 4px; } .dotted-long { min-width: 240px; } .dotted-date { min-width: 170px; } .dotted-time { min-width: 60px; } .date-time-line { margin-top: 5pt; font-size: 16pt; } .team { margin-top: 10pt; } .team-title { font-weight: bold; font-size: 16pt; margin-bottom: 3pt; } .team-list { margin-left: 18pt; line-height: 1.8; font-size: 16pt; } .report { margin-top: 10pt; font-size: 15.5pt; line-height: 1.5; } .report-list { margin-left: 18pt; line-height: 1.6; } .signature { margin-top: 14pt; font-size: 15pt; line-height: 2.3; } .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 320px; margin: 0 6px; } .footer { text-align: center; font-size: 9pt; border-top: 1px dashed #999; padding-top: 3pt; margin-top: auto; }</style></head><body>`;
     currentData.roster.forEach((row, idx)=>{
       let thaiDate = formatThaiDate(row.day, month, year);
       let assistants = [row.asst1, row.asst2];
@@ -516,47 +670,7 @@ function exportDailyPDF(){
       if(!team2_p3){ let fb2 = assistantSet2.filter(n => n !== team2_p2 && !team1Set.has(n)); team2_p3 = fb2[0] || assistantSet2[0]; }
       let rankOnly1 = getRankOnly(row.main);
       let rankOnly2 = getRankOnly(team2_p1);
-      html += `
-        <div class="page">
-          <div class="content">
-            <div class="header">การรายงานความพร้อมด้านการตรวจสถานที่เกิดเหตุ</div>
-            <div class="subheader">แบบการตรวจจำนวนและความพร้อมของเจ้าหน้าที่ตรวจสถานที่เกิดเหตุ</div>
-            <div class="field">หน่วยงาน <span class="dotted dotted-long">พิสูจน์หลักฐานจังหวัดตรัง</span></div>
-            <div class="date-time-line">ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span> เวลา <span class="dotted dotted-time">${toThaiDigits("๐๘.๐๐")}</span> น.</div>
-            <div class="team">
-              <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div>
-              <div class="team-list">
-                ${toThaiDigits(1)}. ${expandRank(team1[0])}<br>
-                ${toThaiDigits(2)}. ${expandRank(team1[1])}<br>
-                ${toThaiDigits(3)}. ${expandRank(team1[2])}
-              </div>
-            </div>
-            <div class="team">
-              <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})</div>
-              <div class="team-list">
-                ${toThaiDigits(1)}. ${expandRank(team2_p1)}<br>
-                ${toThaiDigits(2)}. ${expandRank(team2_p2)}<br>
-                ${toThaiDigits(3)}. ${expandRank(team2_p3)}
-              </div>
-            </div>
-            <div class="report">
-              <div>ข้าพเจ้า <span class="dotted">${expandRank(row.main)}</span> ปฏิบัติหน้าที่เวรตรวจสถานที่เกิดเหตุ ขอรายงาน ดังนี้</div>
-              <div class="report-list">
-                ${toThaiDigits(1)}. ตรวจความพร้อมกำลังพล เครื่องแต่งกาย (ชุดปฏิบัติการฯ) และทรงผม<br>
-                ${toThaiDigits(2)}. ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ<br>
-                ${toThaiDigits(3)}. ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-${toThaiDigits(19)} เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น
-              </div>
-              <div style="margin-left:14pt; margin-top:6pt;">ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ</div>
-              <div style="margin-top:8pt;">จึงเรียนมาเพื่อโปรดทราบ</div>
-            </div>
-            <div class="signature">
-              ลงชื่อ ${rankOnly1} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})<br>
-              ลงชื่อ ${rankOnly2} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})<br>
-              ลงชื่อ พ.ต.อ. <span class="sig-line"></span> ผู้ควบคุมชุดปฏิบัติการ
-            </div>
-          </div>
-          <div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(month)}/${toThaiDigits(year)} (${row.dayName})</div>
-        </div>`;
+      html += `<div class="page"><div class="content"><div class="header">การรายงานความพร้อมด้านการตรวจสถานที่เกิดเหตุ</div><div class="subheader">แบบการตรวจจำนวนและความพร้อมของเจ้าหน้าที่ตรวจสถานที่เกิดเหตุ</div><div class="field">หน่วยงาน <span class="dotted dotted-long">พิสูจน์หลักฐานจังหวัดตรัง</span></div><div class="date-time-line">ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span> เวลา <span class="dotted dotted-time">${toThaiDigits("๐๘.๐๐")}</span> น.</div><div class="team"><div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div><div class="team-list">${toThaiDigits(1)}. ${expandRank(team1[0])}<br>${toThaiDigits(2)}. ${expandRank(team1[1])}<br>${toThaiDigits(3)}. ${expandRank(team1[2])}</div></div><div class="team"><div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})</div><div class="team-list">${toThaiDigits(1)}. ${expandRank(team2_p1)}<br>${toThaiDigits(2)}. ${expandRank(team2_p2)}<br>${toThaiDigits(3)}. ${expandRank(team2_p3)}</div></div><div class="report"><div>ข้าพเจ้า <span class="dotted">${expandRank(row.main)}</span> ปฏิบัติหน้าที่เวรตรวจสถานที่เกิดเหตุ ขอรายงาน ดังนี้</div><div class="report-list">${toThaiDigits(1)}. ตรวจความพร้อมกำลังพล เครื่องแต่งกาย (ชุดปฏิบัติการฯ) และทรงผม<br>${toThaiDigits(2)}. ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ<br>${toThaiDigits(3)}. ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-${toThaiDigits(19)} เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น</div><div style="margin-left:14pt; margin-top:6pt;">ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ</div><div style="margin-top:8pt;">จึงเรียนมาเพื่อโปรดทราบ</div></div><div class="signature">ลงชื่อ ${rankOnly1} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})<br>ลงชื่อ ${rankOnly2} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})<br>ลงชื่อ พ.ต.อ. <span class="sig-line"></span> ผู้ควบคุมชุดปฏิบัติการ</div></div><div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(month)}/${toThaiDigits(year)} (${row.dayName})</div></div>`;
     });
     html += `</body></html>`;
     Swal.close();
