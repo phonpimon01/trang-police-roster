@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - Realtime Sync</title>
+<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - เริ่ม 2569</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,17 +19,14 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 .select-name { border-radius: 20px; padding: 4px 12px; font-weight: 600; font-size: 0.85rem; }
 .badge-person { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.84rem; display: inline-block; }
 .btn-app-action { border-radius: 10px; font-weight: 600; padding: 8px 16px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
-.status-toast { position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 12px; padding: 12px 20px; color: white; font-weight: 600; }
-.manual-badge { background: #ff9800; color: #000; font-weight: 700; animation: pulse 1.5s infinite; }
+.manual-badge { background: #ff9800; color: #000; font-weight: 700; }
 .online-badge { background: #198754; color: white; }
 .offline-badge { background: #6c757d; color: white; }
 .sync-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; }
 .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #198754; animation: pulse-dot 1.5s infinite; }
 .sync-dot.offline { background: #dc3545; animation: none; }
-.sync-dot.syncing { background: #ffc107; animation: spin 1s linear infinite; }
-@keyframes pulse { 0%{opacity:1} 50%{opacity:0.6} 100%{opacity:1} }
+.sync-dot.syncing { background: #ffc107; }
 @keyframes pulse-dot { 0%{transform: scale(1); opacity:1} 50%{transform: scale(1.3); opacity:0.7} 100%{transform: scale(1); opacity:1} }
-@keyframes spin { 0%{transform: rotate(0deg)} 100%{transform: rotate(360deg)} }
 .swal2-popup { font-family: 'Sarabun', sans-serif !important; border-radius: 16px !important; }
 </style>
 </head>
@@ -40,15 +37,16 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <span>ระบบจัดตารางเวร พฐ.จว.ตรัง</span>
 <span id="manualModeBadge" class="badge manual-badge d-none ms-2">โหมดแก้ไขเอง</span>
 <span id="onlineBadge" class="badge online-badge d-none ms-2"><i class="fa-solid fa-wifi"></i> ออนไลน์</span>
-<span id="offlineBadge" class="badge offline-badge d-none ms-2"><i class="fa-solid fa-wifi-slash"></i> ออฟไลน์</span>
+<span id="offlineBadge" class="badge offline-badge d-none ms-2">ออฟไลน์</span>
 <span id="syncIndicator" class="sync-indicator ms-2 text-white-50"><span id="syncDot" class="sync-dot"></span><span id="syncText">ซิงค์แล้ว</span></span>
 </div>
 <div class="d-flex align-items-center gap-2 flex-wrap">
-<select id="monthSelect" class="form-select form-select-sm fw-bold" style="width:auto;">
-<option value="9">กันยายน 2568</option><option value="10" selected>ตุลาคม 2568</option><option value="11">พฤศจิกายน 2568</option><option value="12">ธันวาคม 2568</option>
-</select>
+<div class="input-group input-group-sm w-auto">
+<select id="yearSelect" class="form-select form-select-sm fw-bold" style="width:auto;" onchange="onYearChange()"></select>
+<select id="monthSelect" class="form-select form-select-sm fw-bold" style="width:auto;" onchange="calculateNewRoster(true)"></select>
+</div>
 <button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster(true)"><i class="fa-solid fa-rotate"></i> รีเฟรช</button>
-<button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="forceRealtimeSync()"><i class="fa-solid fa-arrows-rotate"></i> ซิงค์ตอนนี้</button>
+<button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="forceRealtimeSync()"><i class="fa-solid fa-arrows-rotate"></i> ซิงค์</button>
 <button class="btn btn-sm btn-danger btn-app-action" onclick="exportDailyPDF()"><i class="fa-solid fa-file-pdf"></i> PDF รายวัน</button>
 <button class="btn btn-sm btn-success btn-app-action" onclick="saveToGoogleSheet()"><i class="fa-solid fa-cloud-arrow-up"></i> บันทึก</button>
 </div>
@@ -59,7 +57,7 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 <div>
 <div class="d-flex align-items-center gap-2 mb-1">
-<span class="fw-bold"><i class="fa-solid fa-database me-1 text-primary"></i>สถานะ Google Sheet:</span>
+<span class="fw-bold"><i class="fa-solid fa-database me-1 text-primary"></i>Google Sheet:</span>
 <span id="lblSyncStatus" class="small">กำลังเชื่อมโยง...</span>
 <span id="lastSyncTime" class="small text-muted ms-2"></span>
 </div>
@@ -69,34 +67,29 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <div class="text-secondary small text-end">
 <div>เวรหลักเดือนก่อน: <b id="lblLastOfficer" class="text-primary">-</b></div>
 <div>ผู้ช่วย 1: <b id="lblLastAsst1" class="text-danger">-</b></div>
-<div class="mt-1"><label class="form-check-label small"><input type="checkbox" id="autoSyncCheck" class="form-check-input" checked> ออโต้ซิงค์ทุก 15 วินาที</label></div>
+<div class="mt-1"><label class="form-check-label small"><input type="checkbox" id="autoSyncCheck" class="form-check-input" checked> ออโต้ซิงค์ 15 วินาที</label></div>
 </div>
 </div>
 </div>
 
 <div class="row g-3">
-<div class="col-xl-7"><div class="app-card p-3"><h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ <small class="text-muted" style="font-size:0.7em;">ดึงจาก Sheet ทุกครั้ง</small></h5><div class="table-container-app"><table class="table table-bordered table-hover table-app"><thead><tr><th>วันที่</th><th>วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div></div></div>
-<div class="col-xl-5"><div class="app-card p-3"><h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-chart-pie me-2"></i>สรุปภาระงาน</h6><div class="table-responsive" style="max-height:320px; overflow-y:auto;"><table class="table table-striped table-bordered table-app mb-0"><thead class="table-dark"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th><th>เวรนอน</th><th>รวม</th></tr></thead><tbody id="summaryBody"></tbody></table></div></div><div class="app-card p-3 mt-3"><h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-calendar-day me-2"></i>สถิติเวรเสาร์-อาทิตย์</h6><div class="table-responsive" style="max-height:260px; overflow-y:auto;"><table class="table table-sm table-bordered table-app mb-0"><thead class="table-success text-center"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย 2</th></tr></thead><tbody id="weekendStatsBody"></tbody></table></div></div></div>
+<div class="col-xl-7"><div class="app-card p-3"><h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่</h5><div class="table-container-app"><table class="table table-bordered table-hover table-app"><thead><tr><th>วันที่</th><th>วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div></div></div>
+<div class="col-xl-5"><div class="app-card p-3"><h6 class="fw-bold text-primary mb-2">สรุปภาระงาน</h6><div class="table-responsive" style="max-height:320px; overflow-y:auto;"><table class="table table-striped table-bordered table-app mb-0"><thead class="table-dark"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th><th>เวรนอน</th><th>รวม</th></tr></thead><tbody id="summaryBody"></tbody></table></div></div><div class="app-card p-3 mt-3"><h6 class="fw-bold text-success mb-2">สถิติเวรเสาร์-อาทิตย์</h6><div class="table-responsive" style="max-height:260px; overflow-y:auto;"><table class="table table-sm table-bordered table-app mb-0"><thead class="table-success text-center"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย 2</th></tr></thead><tbody id="weekendStatsBody"></tbody></table></div></div></div>
 </div>
 </div>
 
-<div id="toastAlert" class="status-toast bg-success d-none"><span id="toastMessage">สำเร็จ!</span></div>
+<div id="toastAlert" class="status-toast bg-success d-none" style="position:fixed; bottom:20px; right:20px; z-index:9999; border-radius:12px; padding:12px 20px; color:white;"><span id="toastMessage">สำเร็จ!</span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// ==================== REALTIME SYNC CONFIG ====================
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbycOpVtheBPplJKdXOjlQRKBnajUR1iKdYsT6LtmriDs9dJtGXfgfsgjI8aUbScfNwzCw/exec";
-const SYNC_INTERVAL = 15000; // 15 วินาที
-const CACHE_BUST = true;
-
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxdNCmw0JSfegRPJYaLoQ51tjcQgnOg0mJFIXlxaWRdmKrl_ggDfn5v4XUAPPSLkmbYJQ/exec";
+const SYNC_INTERVAL = 15000;
 var currentData = null;
 var isManualMode = false;
 var isOfflineMode = false;
 var lastSyncTimestamp = 0;
 var syncIntervalId = null;
-var pendingChanges = false;
-
 var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
 var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
 var listAsst2 = ["ด.ต.หญิง ธมนวรรณ"].concat(listMainOfficers);
@@ -120,108 +113,49 @@ function getRankOnly(fullName){
   if(fullName.startsWith("ด.ต.")) return "ด.ต.";
   return fullName.split(" ")[0];
 }
+const THAI_MONTHS = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+const THAI_DIGITS = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
+function toThaiDigits(s){ return s.toString().split('').map(c=>{ let n=parseInt(c); return isNaN(n)?c:THAI_DIGITS[n]; }).join(''); }
 
-// ==================== BEAUTIFUL NOTIFICATION SYSTEM ====================
-function showLoadingPopup(title, text){
-  Swal.fire({
-    title: title,
-    text: text,
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showConfirmButton: false,
-    didOpen: () => { Swal.showLoading(); },
-    background: '#fff',
-    backdrop: 'rgba(0,0,0,0.4)'
-  });
-}
-function showSuccessPopup(title, text){
-  Swal.fire({
-    icon: 'success',
-    title: title,
-    text: text,
-    timer: 2000,
-    showConfirmButton: false,
-    background: '#fff'
-  });
-}
-function showErrorPopup(title, text){
-  Swal.fire({
-    icon: 'error',
-    title: title,
-    text: text,
-    confirmButtonText: 'ตกลง',
-    confirmButtonColor: '#1c4587'
-  });
-}
-function showInfoPopup(title, text, confirmText){
-  return Swal.fire({
-    icon: 'info',
-    title: title,
-    text: text,
-    showCancelButton: true,
-    confirmButtonText: confirmText || 'ตกลง',
-    cancelButtonText: 'ยกเลิก',
-    confirmButtonColor: '#1c4587'
-  });
-}
-function showSyncPopup(newData){
-  Swal.fire({
-    icon: 'info',
-    title: 'พบข้อมูลใหม่!',
-    html: `<div style="text-align:left; font-size:14px;">
-      มีผู้ใช้งานคนอื่นบันทึกข้อมูลใหม่ลง Google Sheet<br>
-      <b>เวลาซิงค์ล่าสุด:</b> ${new Date().toLocaleTimeString('th-TH')}<br>
-      <b>ต้องการโหลดข้อมูลใหม่หรือไม่?</b><br>
-      <small class="text-muted">ถ้าคุณกำลังแก้ไขอยู่ งานของคุณอาจหายไป</small>
-    </div>`,
-    showCancelButton: true,
-    confirmButtonText: 'โหลดใหม่เลย',
-    cancelButtonText: 'เก็บของฉันไว้',
-    confirmButtonColor: '#198754',
-    cancelButtonColor: '#6c757d'
-  }).then((result)=>{
-    if(result.isConfirmed){
-      currentData = newData;
-      renderWebPage();
-      updateSyncStatusUI(true, newData.prevContext);
-      showSuccessPopup('ซิงค์สำเร็จ', 'โหลดข้อมูลใหม่จาก Google Sheet แล้ว');
-    }
-  });
-}
-
-function updateSyncIndicator(status, text){
-  const dot = document.getElementById('syncDot');
-  const txt = document.getElementById('syncText');
-  const lastSync = document.getElementById('lastSyncTime');
+// ========== เริ่มปี 2569 เป็นต้นไป ==========
+function initYearMonthSelectors(){
+  const yearSelect = document.getElementById('yearSelect');
+  const monthSelect = document.getElementById('monthSelect');
   
-  dot.className = 'sync-dot ' + status;
-  txt.innerText = text;
-  if(status === 'online' || status === ''){
-    lastSync.innerText = 'ซิงค์ล่าสุด: ' + new Date().toLocaleTimeString('th-TH');
+  // เริ่มปี 2569 = 2026 เป็นต้นไป จนถึง 2579 (10 ปี)
+  const startCE = 2026; // 2569
+  const endCE = 2036; // 2579 = 10 ปีข้างหน้า
+  
+  yearSelect.innerHTML = '';
+  for(let y=startCE; y<=endCE; y++){
+    let thaiYear = y + 543;
+    let opt = document.createElement('option');
+    opt.value = y;
+    opt.text = `พ.ศ. ${toThaiDigits(thaiYear)}`;
+    if(y === 2026) opt.selected = true;
+    yearSelect.appendChild(opt);
   }
+  
+  monthSelect.innerHTML = '';
+  for(let m=1; m<=12; m++){
+    let opt = document.createElement('option');
+    opt.value = m;
+    opt.text = `${THAI_MONTHS[m]}`;
+    monthSelect.appendChild(opt);
+  }
+  monthSelect.value = 10; // ตุลาคม 2569 เริ่มต้น
 }
 
-// ==================== REALTIME SYNC LOGIC ====================
+function onYearChange(){ calculateNewRoster(true); }
+
 window.onload = function(){ 
+  initYearMonthSelectors();
   calculateNewRoster(true);
   startRealtimeSync();
-  
-  // Sync เมื่อกลับมาที่หน้าเว็บ
   document.addEventListener('visibilitychange', function(){
     if(!document.hidden && document.getElementById('autoSyncCheck').checked){
       backgroundSyncCheck();
     }
-  });
-  
-  // Sync เมื่อกลับมาออนไลน์
-  window.addEventListener('online', function(){
-    showSuccessPopup('กลับมาออนไลน์แล้ว', 'กำลังซิงค์ข้อมูลจาก Google Sheet');
-    calculateNewRoster(true);
-  });
-  
-  window.addEventListener('offline', function(){
-    updateSyncIndicator('offline', 'ออฟไลน์');
-    showErrorPopup('ออฟไลน์', 'ไม่มีอินเทอร์เน็ต ระบบจะทำงานแบบออฟไลน์');
   });
 };
 
@@ -233,44 +167,54 @@ function startRealtimeSync(){
     }
   }, SYNC_INTERVAL);
 }
-
 async function backgroundSyncCheck(){
-  if(isManualMode || pendingChanges) return;
-  if(isOfflineMode) return;
-  
+  if(isManualMode || isOfflineMode) return;
   updateSyncIndicator('syncing', 'กำลังซิงค์...');
-  
   try{
+    var year=parseInt(document.getElementById("yearSelect").value);
     var month=parseInt(document.getElementById("monthSelect").value);
-    var year=2026;
-    var cacheBuster = CACHE_BUST ? '&_t=' + Date.now() : '';
-    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}${cacheBuster}`, {cache: 'no-store'});
+    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {cache: 'no-store'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     let data=await res.json();
-    
     if(data.lastModified && data.lastModified > lastSyncTimestamp && lastSyncTimestamp !== 0){
-      // มีข้อมูลใหม่กว่า
       if(data.isFromSheet){
-        showSyncPopup(data);
+        Swal.fire({
+          icon: 'info',
+          title: 'พบข้อมูลใหม่!',
+          html: `มีผู้ใช้งานคนอื่นบันทึกข้อมูลใหม่<br>ซิงค์ล่าสุด: ${new Date().toLocaleTimeString('th-TH')}`,
+          showCancelButton: true,
+          confirmButtonText: 'โหลดใหม่เลย',
+          cancelButtonText: 'เก็บของฉันไว้',
+          confirmButtonColor: '#198754'
+        }).then((result)=>{
+          if(result.isConfirmed){
+            currentData = data;
+            renderWebPage();
+            Swal.fire({icon: 'success', title: 'ซิงค์สำเร็จ', timer: 1500, showConfirmButton: false});
+          }
+        });
       }
     }
     lastSyncTimestamp = data.lastModified || Date.now();
     updateSyncIndicator('', 'ซิงค์แล้ว');
-    
   }catch(e){
     updateSyncIndicator('offline', 'ซิงค์ล้มเหลว');
-    console.log('Background sync failed:', e);
   }
 }
-
-function forceRealtimeSync(){
-  showLoadingPopup('กำลังซิงค์ข้อมูล', 'ดึงข้อมูลล่าสุดจาก Google Sheet...');
-  calculateNewRoster(true).then(()=>{
-    Swal.close();
-    showSuccessPopup('ซิงค์สำเร็จ', 'ข้อมูลล่าสุดจาก Google Sheet');
-  });
+function forceRealtimeSync(){ calculateNewRoster(true); }
+function updateSyncIndicator(status, text){
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  const lastSync = document.getElementById('lastSyncTime');
+  dot.className = 'sync-dot ' + status;
+  txt.innerText = text;
+  if(status === '' || status === 'online'){
+    lastSync.innerText = 'ซิงค์ล่าสุด: ' + new Date().toLocaleTimeString('th-TH');
+  }
 }
-
+function showLoadingPopup(title, text){
+  Swal.fire({title: title, text: text, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+}
 function showToast(msg, isError){
   var t=document.getElementById("toastAlert");
   document.getElementById("toastMessage").innerText=msg;
@@ -281,82 +225,49 @@ function showToast(msg, isError){
 function renderBadge(name){ var s=colorMap[name]||{bg:"#e0e0e0",text:"#000"}; return `<span class="badge-person" style="background:${s.bg};color:${s.text}">${name}</span>`; }
 
 async function calculateNewRoster(showPopup){
+  var year=parseInt(document.getElementById("yearSelect").value);
   var month=parseInt(document.getElementById("monthSelect").value);
-  var year=2026;
-  
-  if(showPopup){
-    showLoadingPopup('กำลังโหลดข้อมูล', 'ดึงข้อมูลจาก Google Sheet แบบ Realtime...');
-  }
-  
+  if(showPopup) showLoadingPopup('กำลังโหลด', `ดึงข้อมูลปี ${toThaiDigits(year+543)} เดือน ${THAI_MONTHS[month]} จาก Google Sheet...`);
   updateSyncIndicator('syncing', 'กำลังโหลด...');
-  document.getElementById("lblSyncStatus").innerHTML="<b class='text-warning'><i class='fa-solid fa-spinner fa-spin'></i> กำลังเชื่อมโยง Google Sheet...</b>";
-  
+  document.getElementById("lblSyncStatus").innerHTML="<b class='text-warning'><i class='fa-solid fa-spinner fa-spin'></i> กำลังเชื่อมโยง...</b>";
   try{
-    let cacheBuster = CACHE_BUST ? '&_t=' + Date.now() : '';
     let controller = new AbortController();
     let timeoutId = setTimeout(()=>controller.abort(), 10000);
-    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}${cacheBuster}`, {signal: controller.signal, cache: 'no-store'});
+    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {signal: controller.signal, cache: 'no-store'});
     clearTimeout(timeoutId);
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     let data=await res.json();
     if(data.error) throw new Error(data.error);
-    
     currentData=data; isManualMode=false; isOfflineMode=false;
     lastSyncTimestamp = data.lastModified || Date.now();
-    
     document.getElementById("manualModeBadge").classList.add("d-none");
     document.getElementById("offlineBadge").classList.add("d-none");
     document.getElementById("onlineBadge").classList.remove("d-none");
     if(!currentData.lockedFixes) currentData.lockedFixes={};
-    
     renderWebPage();
     document.getElementById("lblSyncStatus").innerHTML=data.isFromSheet
-      ?"<b class='text-success'><i class='fa-solid fa-cloud-check'></i> ออนไลน์ - ดึงจาก Google Sheet แบบ Realtime (ซิงค์ทุก 15 วินาที)</b>"
-      :"<b class='text-primary'>ข้อมูลใหม่ - ยังไม่ได้บันทึก</b>";
-    
+      ?`<b class='text-success'><i class='fa-solid fa-cloud-check'></i> ออนไลน์ - ปี ${toThaiDigits(year+543)} เดือน ${THAI_MONTHS[month]} (ซิงค์ทุก 15 วิ)</b>`
+      :`<b class='text-primary'>ข้อมูลใหม่ปี ${toThaiDigits(year+543)} - ยังไม่ได้บันทึก</b>`;
     if(data.prevContext){
       document.getElementById("lblLastOfficer").innerText=data.prevContext.lastOfficer||"-";
       document.getElementById("lblLastAsst1").innerText=data.prevContext.lastAsst1||"-";
       document.getElementById("lblRecommendation").innerText=data.prevContext.recommendation||"";
     }
-    
     updateSyncIndicator('', 'ซิงค์แล้ว');
-    
-    if(showPopup){
-      Swal.close();
-      showSuccessPopup('โหลดสำเร็จ', `ดึงข้อมูลเดือน ${month}/${year} จาก Google Sheet แล้ว (${data.roster.length} วัน)`);
-    }
-    
+    if(showPopup){ Swal.close(); Swal.fire({icon: 'success', title: 'โหลดสำเร็จ', text: `ปี ${toThaiDigits(year+543)} เดือน ${THAI_MONTHS[month]}`, timer: 1500, showConfirmButton: false}); }
     return data;
-    
   }catch(e){
-    console.error(e);
     document.getElementById("onlineBadge").classList.add("d-none");
     document.getElementById("offlineBadge").classList.remove("d-none");
     updateSyncIndicator('offline', 'ออฟไลน์');
-    
-    if(showPopup){
-      Swal.fire({
-        icon: 'warning',
-        title: 'เชื่อมต่อ Sheet ไม่ได้',
-        html: `<div style="text-align:left; font-size:14px;">
-          <b>Error:</b> ${e.message}<br><br>
-          ระบบจะสลับเป็นโหมดออฟไลน์ให้อัตโนมัติ<br>
-          คุณยังจัดเวรและออก PDF ได้ปกติ
-        </div>`,
-        confirmButtonText: 'ใช้โหมดออฟไลน์',
-        confirmButtonColor: '#ff9800'
-      });
-    }
-    
+    if(showPopup){ Swal.fire({icon: 'warning', title: 'ออฟไลน์', text: e.message, confirmButtonText: 'ใช้โหมดออฟไลน์'}); }
     generateLocalRoster();
     return null;
   }
 }
-
 function generateLocalRoster(){
+  var year=parseInt(document.getElementById("yearSelect").value);
   var month=parseInt(document.getElementById("monthSelect").value);
-  var year=2026;
   var totalDays = new Date(year, month, 0).getDate();
   var dayNamesTH = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
   var rosterData = [];
@@ -379,7 +290,7 @@ function generateLocalRoster(){
   isManualMode = false;
   isOfflineMode = true;
   document.getElementById("manualModeBadge").classList.add("d-none");
-  document.getElementById("lblSyncStatus").innerHTML="<b class='text-warning'><i class='fa-solid fa-wifi-slash'></i> ออฟไลน์ - โหมดสำรอง</b>";
+  document.getElementById("lblSyncStatus").innerHTML=`<b class='text-warning'><i class='fa-solid fa-wifi-slash'></i> ออฟไลน์ - ปี ${toThaiDigits(year+543)}</b>`;
   renderWebPage();
 }
 function recalculateAllStats(rosterData, year, month){
@@ -404,7 +315,6 @@ function renderWebPage(){
 function createDropdown(ri, ct, sel, list){ var st=colorMap[sel]||{bg:"#fff",text:"#000"}; var h=`<select class="form-select select-name" style="background:${st.bg};color:${st.text}" onchange="updateDutyPerson(${ri},'${ct}',this.value,this)">`; list.forEach(n=>{ h+=`<option value="${n}" ${n===sel?"selected":""}>${n}</option>`; }); h+=`</select>`; return h; }
 function updateDutyPerson(ri, ct, newName, el){
   isManualMode=true;
-  pendingChanges = true;
   document.getElementById("manualModeBadge").classList.remove("d-none");
   if(!currentData.lockedFixes) currentData.lockedFixes={};
   currentData.roster[ri][ct]=newName;
@@ -414,69 +324,59 @@ function updateDutyPerson(ri, ct, newName, el){
   recalculateAllStats(currentData.roster, currentData.year, currentData.month);
   renderSummaryTable();
   renderWeekendStatsTable();
-  document.getElementById("lblSyncStatus").innerHTML=`<b class='text-warning'><i class='fa-solid fa-pen'></i> โหมดแก้ไขเอง - มีการเปลี่ยนแปลง (ยังไม่ได้บันทึก)</b>`;
-  showToast("แก้ไขแล้ว! อย่าลืมกดบันทึกเพื่อซิงค์ขึ้น Sheet");
-  updateSyncIndicator('offline', 'มีแก้ยังไม่บันทึก');
 }
 function renderSummaryTable(){ var h=""; currentData.summary.forEach(s=>{ h+=`<tr><td>${renderBadge(s.name)}</td><td>${s.main} วัน</td><td>${s.asst} วัน</td><td>${s.sleep} วัน</td><td><b class="text-primary">${s.total} วัน</b></td></tr>`; }); document.getElementById("summaryBody").innerHTML=h; }
 function renderWeekendStatsTable(){ var html=""; listMainOfficers.forEach(name=>{ var st=currentData.weekendStats[name]||{mainWeekendCount:0,mainDates:[],asst2WeekendCount:0,asst2Dates:[]}; html+=`<tr><td>${renderBadge(name)}</td><td class="text-center"><b class="text-success">${st.mainWeekendCount} วัน</b><br><small>${st.mainDates.join(", ")||"-"}</small></td><td class="text-center"><b class="text-primary">${st.asst2WeekendCount} วัน</b><br><small>${st.asst2Dates.join(", ")||"-"}</small></td></tr>`; }); document.getElementById("weekendStatsBody").innerHTML=html; }
-
-async function saveToGoogleSheet(){
-  if(isOfflineMode){
-    showErrorPopup('ออฟไลน์', 'โหมดออฟไลน์บันทึก Sheet ไม่ได้\n\nต้องแก้ให้กลับมาออนไลน์ก่อน: Deploy GAS แบบ Anyone');
-    return;
-  }
+async function saveToGoogleSheet(){ 
+  if(isOfflineMode){ Swal.fire({icon: 'error', title: 'ออฟไลน์', text: 'บันทึกไม่ได้'}); return; }
   if(!currentData) return;
-  
-  showLoadingPopup('กำลังบันทึก', 'กำลังบันทึกข้อมูลขึ้น Google Sheet และซิงค์ให้ทุกคน...');
-  pendingChanges = true;
-  updateSyncIndicator('syncing', 'กำลังบันทึก...');
-  
+  Swal.fire({title: 'กำลังบันทึก', text: 'บันทึกขึ้น Google Sheet...', allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   try{
     let r=await fetch(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})});
     let res=await r.json();
     if(res.error) throw new Error(res.error);
-    
     isManualMode=false;
-    pendingChanges = false;
     document.getElementById("manualModeBadge").classList.add("d-none");
-    currentData.lockedFixes={};
-    lastSyncTimestamp = Date.now();
-    
     Swal.close();
-    showSuccessPopup('บันทึกสำเร็จ!', `บันทึก ${currentData.roster.length} วัน ขึ้น Google Sheet แล้ว ทุกคนจะเห็นข้อมูลใหม่เมื่อซิงค์`);
-    
-    document.getElementById("lblSyncStatus").innerHTML="<b class='text-success'><i class='fa-solid fa-cloud-check'></i> บันทึกแล้ว - ออนไลน์ ซิงค์เรียบร้อย</b>";
+    Swal.fire({icon: 'success', title: 'บันทึกสำเร็จ!', text: `ปี ${toThaiDigits(currentData.year+543)} เดือน ${THAI_MONTHS[currentData.month]}`, timer: 2000, showConfirmButton: false});
+    document.getElementById("lblSyncStatus").innerHTML="<b class='text-success'><i class='fa-solid fa-cloud-check'></i> บันทึกแล้ว - ซิงค์เรียบร้อย</b>";
     updateSyncIndicator('', 'ซิงค์แล้ว');
-    
   }catch(e){
     Swal.close();
-    showErrorPopup('บันทึกล้มเหลว', e.message);
-    updateSyncIndicator('offline', 'บันทึกไม่สำเร็จ');
+    Swal.fire({icon: 'error', title: 'บันทึกล้มเหลว', text: e.message});
   }
 }
 
-// ==================== PDF EXPORT (เหมือน V12) ====================
-const THAI_MONTHS = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-const THAI_DIGITS = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
-function toThaiDigits(s){ return s.toString().split('').map(c=>{ let n=parseInt(c); return isNaN(n)?c:THAI_DIGITS[n]; }).join(''); }
 function formatThaiDate(day, month, year){ return `${toThaiDigits(day)} ${THAI_MONTHS[month]} ${toThaiDigits(year+543)}`; }
 function expandRank(fullName){
-  let map = {"ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร","ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี","จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ตั้นฉ้วน","ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร","พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์","พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา","พ.ต.ต.หญิง พัชราภรณ์": "พ.ต.ต.หญิง พัชราภรณ์","ร.ต.ท.กิตติศักดิ์": "ร.ต.ท. กิตติศักดิ์","พ.ต.ต.พรพิมล": "ว่าที่ พ.ต.ต. พรพิมล คงชัย","ร.ต.อ.นัสรอน": "ร.ต.อ. นัสรอน","ร.ต.ท.รณชัช": "ร.ต.ท. รณชัช"};
+  let map = {
+    "ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร",
+    "ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี",
+    "จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ตั้นฉ้วน",
+    "ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร",
+    "พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์",
+    "พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา",
+    "พ.ต.ต.หญิง พัชราภรณ์": "พ.ต.ต.หญิง พัชราภรณ์",
+    "ร.ต.ท.กิตติศักดิ์": "ร.ต.ท. กิตติศักดิ์",
+    "พ.ต.ต.พรพิมล": "ว่าที่ พ.ต.ต. พรพิมล คงชัย",
+    "ร.ต.อ.นัสรอน": "ร.ต.อ. นัสรอน",
+    "ร.ต.ท.รณชัช": "ร.ต.ท. รณชัช"
+  };
   return map[fullName] || fullName;
 }
+
 function exportDailyPDF(){
-  if(!currentData || !currentData.roster){ showErrorPopup('ไม่มีข้อมูล', 'ไม่มีข้อมูลเวรให้ส่งออก'); return; }
-  
-  showLoadingPopup('กำลังสร้าง PDF', `กำลังสร้างแบบฟอร์ม ${currentData.roster.length} หน้า...`);
+  if(!currentData || !currentData.roster){ Swal.fire({icon: 'error', title: 'ไม่มีข้อมูล'}); return; }
+  Swal.fire({title: 'กำลังสร้าง PDF', text: `สร้าง ${toThaiDigits(currentData.roster.length)} หน้า เลขไทย 100%...`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   
   setTimeout(()=>{
-    let year = currentData.year; let month = currentData.month;
+    let year = currentData.year; 
+    let month = currentData.month;
     let html = `<html><head><meta charset="utf-8">
       <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
       <style>
         @page { size: A4; margin: 10mm; }
-        body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 17pt; line-height: 1.35; color: #000; margin:0; }
+        body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 17pt; line-height: 1.4; color: #000; margin:0; }
         .page { width: 210mm; height: 297mm; margin: 0 auto; padding: 10mm 14mm 8mm 14mm; box-sizing: border-box; page-break-after: always; position: relative; display: flex; flex-direction: column; border: 2.5px solid #000; }
         .page:last-child { page-break-after: avoid; }
         .content { flex: 1; }
@@ -490,10 +390,10 @@ function exportDailyPDF(){
         .date-time-line { margin-top: 5pt; font-size: 16pt; }
         .team { margin-top: 10pt; }
         .team-title { font-weight: bold; font-size: 16pt; margin-bottom: 3pt; }
-        .team-list { margin-left: 18pt; line-height: 1.75; font-size: 16pt; }
-        .report { margin-top: 10pt; font-size: 15pt; line-height: 1.45; }
-        .report ol { margin: 3pt 0 3pt 16pt; padding: 0; }
-        .signature { margin-top: 14pt; font-size: 15pt; line-height: 2.2; }
+        .team-list { margin-left: 18pt; line-height: 1.8; font-size: 16pt; }
+        .report { margin-top: 10pt; font-size: 15.5pt; line-height: 1.5; }
+        .report-list { margin-left: 18pt; line-height: 1.6; }
+        .signature { margin-top: 14pt; font-size: 15pt; line-height: 2.3; }
         .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 320px; margin: 0 6px; }
         .footer { text-align: center; font-size: 9pt; border-top: 1px dashed #999; padding-top: 3pt; margin-top: auto; }
       </style></head><body>`;
@@ -526,6 +426,7 @@ function exportDailyPDF(){
             <div class="subheader">แบบการตรวจจำนวนและความพร้อมของเจ้าหน้าที่ตรวจสถานที่เกิดเหตุ</div>
             <div class="field">หน่วยงาน <span class="dotted dotted-long">พิสูจน์หลักฐานจังหวัดตรัง</span></div>
             <div class="date-time-line">ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span> เวลา <span class="dotted dotted-time">${toThaiDigits("๐๘.๐๐")}</span> น.</div>
+            
             <div class="team">
               <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div>
               <div class="team-list">
@@ -534,6 +435,7 @@ function exportDailyPDF(){
                 ${toThaiDigits(3)}. ${expandRank(team1[2])}
               </div>
             </div>
+
             <div class="team">
               <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})</div>
               <div class="team-list">
@@ -542,16 +444,20 @@ function exportDailyPDF(){
                 ${toThaiDigits(3)}. ${expandRank(team2_p3)}
               </div>
             </div>
+
             <div class="report">
               <div>ข้าพเจ้า <span class="dotted">${expandRank(row.main)}</span> ปฏิบัติหน้าที่เวรตรวจสถานที่เกิดเหตุ ขอรายงาน ดังนี้</div>
-              <ol>
-                <li>ตรวจความพร้อมกำลังพล เครื่องแต่งกาย (ชุดปฏิบัติการฯ) และทรงผม</li>
-                <li>ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ</li>
-                <li>ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-๑๙ เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น</li>
-              </ol>
-              <div style="margin-left:14pt;">ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ</div>
+              <div class="report-list">
+                ${toThaiDigits(1)}. ตรวจความพร้อมกำลังพล เครื่องแต่งกาย (ชุดปฏิบัติการฯ) และทรงผม<br>
+                ${toThaiDigits(2)}. ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ<br>
+                ${toThaiDigits(3)}. ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-${toThaiDigits(19)} เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น
+              </div>
+              <div style="margin-left:14pt; margin-top:6pt;">
+                ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ
+              </div>
               <div style="margin-top:8pt;">จึงเรียนมาเพื่อโปรดทราบ</div>
             </div>
+
             <div class="signature">
               ลงชื่อ ${rankOnly1} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})<br>
               ลงชื่อ ${rankOnly2} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})<br>
@@ -568,7 +474,7 @@ function exportDailyPDF(){
     w.document.write(html);
     w.document.close();
     setTimeout(()=>{ w.focus(); w.print(); }, 800);
-    showSuccessPopup('สร้าง PDF สำเร็จ', `สร้าง ${currentData.roster.length} หน้า เรียบร้อย`);
+    Swal.fire({icon: 'success', title: 'สร้าง PDF สำเร็จ', text: `ปี ${toThaiDigits(year+543)} ${toThaiDigits(currentData.roster.length)} หน้า เลขไทย 100%`, timer: 2000, showConfirmButton: false});
     
   }, 500);
 }
