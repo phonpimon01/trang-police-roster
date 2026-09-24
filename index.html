@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - V20 แก้ชื่อสกุล + ทีม 1</title>
+<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - V21 เรียงผู้ช่วยตามยศ</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,6 +29,7 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 @keyframes pulse-dot { 0%{transform: scale(1); opacity:1} 50%{transform: scale(1.3); opacity:0.7} 100%{transform: scale(1); opacity:1} }
 .swal2-popup { font-family: 'Sarabun', sans-serif !important; border-radius: 16px !important; }
 .fullname-editor { background: #fff3cd; border: 1px solid #ffc107; border-radius: 12px; padding: 12px; }
+.rank-badge { font-size: 0.7em; background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 8px; margin-left: 4px; }
 </style>
 </head>
 <body>
@@ -54,20 +55,19 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 </nav>
 
 <div class="container-fluid py-3 px-3">
-<div class="alert alert-warning py-2 small mb-3">
-<i class="fa-solid fa-triangle-exclamation"></i> <b>V20 แก้แล้ว:</b> 1) เติมนามสกุลให้ครบ 2) แก้ จ.ส.ต.ปิติพงษ์ ชัยเพชร 3) ทีมชุดที่ 1 ดึงจาก ผู้ช่วย 1 + ผู้ช่วย 2 (ไม่ใช้เวรนอน) 
+<div class="alert alert-success py-2 small mb-3">
+<i class="fa-solid fa-star"></i> <b>V21 ใหม่:</b> ทีมชุดเวรหลัก (ผู้ช่วย 1+2) จะ<b>เรียงตามยศ</b>อีกครั้งก่อนสร้างแบบฟอร์ม - ยศสูงอยู่บน ยศต่ำอยู่ล่าง
 <span id="currentSheetName" class="badge bg-dark ms-2"></span>
 <button class="btn btn-sm btn-outline-dark ms-2" data-bs-toggle="collapse" data-bs-target="#nameEditor"><i class="fa-solid fa-pen"></i> แก้ชื่อ-สกุล</button>
 </div>
 
 <div id="nameEditor" class="collapse mb-3">
 <div class="fullname-editor">
-<h6 class="fw-bold"><i class="fa-solid fa-users"></i> แก้ไขชื่อ-นามสกุลให้ถูกต้อง (จะใช้ใน PDF)</h6>
-<p class="small text-muted mb-2">พบว่าบางคนมีแต่ยศ ชื่อ ไม่มีนามสกุล - แก้ที่นี่ได้เลย แล้วระบบจะจำไว้ใช้สร้างแบบฟอร์ม</p>
+<h6 class="fw-bold"><i class="fa-solid fa-users"></i> แก้ไขชื่อ-นามสกุล + ยศ</h6>
 <div class="row g-2" id="fullnameEditorBody"></div>
 <div class="mt-2">
 <button class="btn btn-sm btn-primary" onclick="saveFullNames()"><i class="fa-solid fa-save"></i> บันทึกชื่อ-สกุล</button>
-<span class="small text-muted ms-2">* แก้แล้วต้องกดบันทึก ชื่อจะใช้ใน PDF ทันที</span>
+<span class="small text-muted ms-2">ลำดับยศ: พ.ต.ท. > พ.ต.ต. > ร.ต.อ. > ร.ต.ท. > ร.ต.ต. > จ.ส.ต. > ด.ต.</span>
 </div>
 </div>
 </div>
@@ -81,7 +81,6 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <span id="lastSyncTime" class="small text-muted ms-2"></span>
 </div>
 <p class="mb-0 small text-muted" id="lblRecommendation"></p>
-<div class="mt-2 small"><span class="badge bg-primary">ชุดที่ 1 ผู้ช่วย (8 คน)</span> พ.ต.ท.หญิง พัชรี, อลิษา, พัชราภรณ์, กิตติศักดิ์, พรพิมล, นัสรอน, รณชัช, ธมนวรรณ | <span class="badge bg-info text-dark">ชุดที่ 2 ผู้ช่วย (3 คน)</span> พรณรงค์, สุริยา, ปิติพงษ์</div>
 </div>
 <div class="text-secondary small text-end">
 <div>เวรหลักเดือนก่อน: <b id="lblLastOfficer" class="text-primary">-</b></div>
@@ -92,7 +91,7 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 </div>
 
 <div class="row g-3">
-<div class="col-xl-7"><div class="app-card p-3"><h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ <small class="text-muted" style="font-size:0.7em;" id="tableSubTitle"></small></h5><div class="table-container-app"><table class="table table-bordered table-hover table-app"><thead><tr><th>วันที่</th><th>วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div></div></div>
+<div class="col-xl-7"><div class="app-card p-3"><h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ <small class="text-muted" style="font-size:0.7em;" id="tableSubTitle"></small> <small class="badge bg-success ms-2" style="font-size:0.6em;">V21 เรียงผู้ช่วยตามยศ</small></h5><div class="table-container-app"><table class="table table-bordered table-hover table-app"><thead><tr><th>วันที่</th><th>วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div></div></div>
 <div class="col-xl-5"><div class="app-card p-3"><h6 class="fw-bold text-primary mb-2">สรุปภาระงาน</h6><div class="table-responsive" style="max-height:320px; overflow-y:auto;"><table class="table table-striped table-bordered table-app mb-0"><thead class="table-dark"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th><th>เวรนอน</th><th>รวม</th></tr></thead><tbody id="summaryBody"></tbody></table></div></div><div class="app-card p-3 mt-3"><h6 class="fw-bold text-success mb-2">สถิติเวรเสาร์-อาทิตย์</h6><div class="table-responsive" style="max-height:260px; overflow-y:auto;"><table class="table table-sm table-bordered table-app mb-0"><thead class="table-success text-center"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย 2</th></tr></thead><tbody id="weekendStatsBody"></tbody></table></div></div></div>
 </div>
 </div>
@@ -100,7 +99,7 @@ body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--b
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxr2r8kYuD75cOd0ieEPjzvA_rY8PMJu-UhXAS4pBZ7SM4PjXF9hSvaHcwlqK2U9iopmA/exec";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbw1MWlP8WKi_81mkkF69b4EcmfuH9fRaTd3LzJUv3Sn5Z5ZnRV9dziymFaiOd6gcUf3bQ/exec";
 const SHEET_ID = "1Bloyb9AV60eZs7lWWge3fbD7kfphq8nbqSPYGJDJSi0";
 const SYNC_INTERVAL = 30000;
 var currentData = null;
@@ -117,13 +116,26 @@ var listSleep = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.�
 var assistantSet1 = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช", "ด.ต.หญิง ธมนวรรณ"];
 var assistantSet2 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
 var colorMap = {"พ.ต.ท.หญิง พัชรี": { bg: "#fce5cd", text: "#783f04" },"พ.ต.ท.หญิง อลิษา": { bg: "#ead1dc", text: "#4c1130" },"พ.ต.ต.หญิง พัชราภรณ์": { bg: "#fff2cc", text: "#7f6000" },"ร.ต.ท.กิตติศักดิ์": { bg: "#f4ccd3", text: "#741b47" },"พ.ต.ต.พรพิมล": { bg: "#d9ead3", text: "#274e13" },"ร.ต.อ.นัสรอน": { bg: "#c9daf8", text: "#1c4587" },"ร.ต.ท.รณชัช": { bg: "#d9d2e9", text: "#20124d" },"ร.ต.ต.พรณรงค์": { bg: "#d0e0e3", text: "#134f5c" },"ว่าที่ ร.ต.ต.สุริยา": { bg: "#f5e5d3", text: "#5b3f11" },"จ.ส.ต.ปิติพงษ์": { bg: "#e1d5e7", text: "#351c75" },"ด.ต.หญิง ธมนวรรณ": { bg: "#efefef", text: "#434343" }};
-var rankScore = {"พ.ต.ท.หญิง พัชรี": 100, "พ.ต.ท.หญิง อลิษา": 100,"พ.ต.ต.หญิง พัชราภรณ์": 90, "พ.ต.ต.พรพิมล": 90,"ร.ต.อ.นัสรอน": 80, "ร.ต.ท.กิตติศักดิ์": 70, "ร.ต.ท.รณชัช": 70,"ร.ต.ต.พรณรงค์": 60, "ว่าที่ ร.ต.ต.สุริยา": 55, "ด.ต.หญิง ธมนวรรณ": 40, "จ.ส.ต.ปิติพงษ์": 30};
 
-// ===== แก้ชื่อสกุลให้ถูกต้อง - ผู้ใช้แก้ได้ =====
+// ลำดับยศสำหรับเรียง - ยศสูงคะแนนสูง
+var rankScore = {
+  "พ.ต.ท.หญิง พัชรี": 100, 
+  "พ.ต.ท.หญิง อลิษา": 100,
+  "พ.ต.ต.หญิง พัชราภรณ์": 90, 
+  "พ.ต.ต.พรพิมล": 90,
+  "ร.ต.อ.นัสรอน": 80, 
+  "ร.ต.ท.กิตติศักดิ์": 70, 
+  "ร.ต.ท.รณชัช": 70,
+  "ร.ต.ต.พรณรงค์": 60, 
+  "ว่าที่ ร.ต.ต.สุริยา": 55, 
+  "ด.ต.หญิง ธมนวรรณ": 40, 
+  "จ.ส.ต.ปิติพงษ์": 30
+};
+
 var FULL_NAME_MAP = {
   "ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร",
   "ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี",
-  "จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ชัยเพชร", // แก้แล้วตามที่แจ้ง
+  "จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ชัยเพชร",
   "ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร",
   "พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์",
   "พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา จันทร์ศรี",
@@ -161,16 +173,28 @@ function computeHash(roster){
   } catch(e){ return ""; }
 }
 
+// ===== ฟังก์ชันเรียงตามยศ - ใหม่ V21 =====
+function sortByRank(names){
+  return [...names].sort((a,b) => {
+    let scoreA = rankScore[a] || 0;
+    let scoreB = rankScore[b] || 0;
+    // ยศสูงอยู่บน (คะแนนสูงก่อน)
+    if(scoreB !== scoreA) return scoreB - scoreA;
+    // ถ้าคะแนนเท่ากัน เรียงตามชื่อ
+    return a.localeCompare(b, 'th');
+  });
+}
+
 function initFullNameEditor(){
   var all = Object.keys(FULL_NAME_MAP);
   var html = "";
   all.forEach(function(shortName){
     var full = FULL_NAME_MAP[shortName];
-    html += `<div class="col-md-6"><div class="input-group input-group-sm mb-1"><span class="input-group-text" style="min-width:140px;">${shortName}</span><input type="text" class="form-control" id="fn_${shortName}" value="${full}"></div></div>`;
+    var score = rankScore[shortName] || 0;
+    html += `<div class="col-md-6"><div class="input-group input-group-sm mb-1"><span class="input-group-text" style="min-width:140px;">${shortName} <span class="rank-badge">${score}</span></span><input type="text" class="form-control" id="fn_${shortName}" value="${full}"></div></div>`;
   });
   document.getElementById('fullnameEditorBody').innerHTML = html;
 }
-
 function saveFullNames(){
   var all = Object.keys(FULL_NAME_MAP);
   all.forEach(function(shortName){
@@ -178,13 +202,9 @@ function saveFullNames(){
     if(el) FULL_NAME_MAP[shortName] = el.value.trim();
   });
   localStorage.setItem('fullNameMap_V20', JSON.stringify(FULL_NAME_MAP));
-  Swal.fire({icon: 'success', title: 'บันทึกชื่อ-สกุลแล้ว', text: 'จะใช้ใน PDF ทันที', timer: 1500, showConfirmButton: false});
+  Swal.fire({icon: 'success', title: 'บันทึกชื่อ-สกุลแล้ว', timer: 1200, showConfirmButton: false});
 }
-
-function expandRank(fullName){
-  // ใช้ map ที่แก้ไขแล้ว
-  return FULL_NAME_MAP[fullName] || fullName;
-}
+function expandRank(fullName){ return FULL_NAME_MAP[fullName] || fullName; }
 
 function initYearMonthSelectors(){
   const yearSelect = document.getElementById('yearSelect');
@@ -219,16 +239,14 @@ function updateCurrentSheetName(){
 function onYearChange(){ updateCurrentSheetName(); calculateNewRoster(true); }
 
 window.onload = function(){ 
-  // โหลดชื่อที่เคยแก้ไว้
   try {
     var saved = localStorage.getItem('fullNameMap_V20');
     if(saved){
       var parsed = JSON.parse(saved);
-      // รวมกับ default โดยให้ saved ทับ
       Object.keys(parsed).forEach(k => { FULL_NAME_MAP[k] = parsed[k]; });
     }
   } catch(e){}
-  
+  FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"] = "จ.ส.ต. ปิติพงษ์ ชัยเพชร";
   initFullNameEditor();
   initYearMonthSelectors();
   calculateNewRoster(true);
@@ -271,22 +289,9 @@ async function backgroundSyncCheck(){
       }).then((result)=>{
         if(result.isConfirmed){
           currentData = fullData;
-          if(fullData.fullNameMap){
-            // อัปเดตชื่อจาก sheet ด้วย แต่ให้ localStorage ทับ
-            try {
-              var saved = localStorage.getItem('fullNameMap_V20');
-              if(!saved){
-                FULL_NAME_MAP = fullData.fullNameMap;
-                // แก้ ชัยเพชร ให้แน่ใจ
-                FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"] = "จ.ส.ต. ปิติพงษ์ ชัยเพชร";
-                initFullNameEditor();
-              }
-            } catch(e){}
-          }
           lastContentHash = newHash;
           lastSyncTimestamp = checkData.lastModified;
           renderWebPage();
-          Swal.fire({icon: 'success', title: 'โหลดใหม่แล้ว', timer: 1200, showConfirmButton: false});
         } else {
           lastContentHash = newHash;
           lastSyncTimestamp = checkData.lastModified;
@@ -328,7 +333,6 @@ async function calculateNewRoster(showPopup){
     lastSyncTimestamp = data.lastModified || 0;
     lastContentHash = data.contentHash || computeHash(data.roster) || "";
     if(data.fullNameMap){
-      // ใช้ชื่อจาก backend แต่ให้ localStorage ที่ผู้ใช้แก้ทับเสมอ และบังคับแก้ ชัยเพชร
       try {
         var saved = localStorage.getItem('fullNameMap_V20');
         if(saved){
@@ -462,7 +466,7 @@ function formatThaiDate(day, month, year){ return `${toThaiDigits(day)} ${THAI_M
 
 function exportDailyPDF(){
   if(!currentData || !currentData.roster){ Swal.fire({icon: 'error', title: 'ไม่มีข้อมูล'}); return; }
-  Swal.fire({title: 'กำลังสร้าง PDF', text: `สร้าง ${toThaiDigits(currentData.roster.length)} หน้า แก้ทีม 1 แล้ว...`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
+  Swal.fire({title: 'กำลังสร้าง PDF', text: `สร้าง ${toThaiDigits(currentData.roster.length)} หน้า - เรียงผู้ช่วยตามยศ...`, allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});
   
   setTimeout(()=>{
     let year = currentData.year; 
@@ -491,13 +495,19 @@ function exportDailyPDF(){
         .signature { margin-top: 14pt; font-size: 15pt; line-height: 2.3; }
         .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 320px; margin: 0 6px; }
         .footer { text-align: center; font-size: 9pt; border-top: 1px dashed #999; padding-top: 3pt; margin-top: auto; }
+        .rank-note { font-size: 9pt; color: #666; text-align: right; margin-top: 2pt; }
       </style></head><body>`;
 
     currentData.roster.forEach((row, idx)=>{
       let thaiDate = formatThaiDate(row.day, month, year);
-      // ===== แก้ตามขอ: ทีมชุดที่ 1 ใช้ ผู้ช่วย 1 + ผู้ช่วย 2 ไม่ใช้เวรนอน =====
-      let team1 = [row.main, row.asst1, row.asst2]; // แก้แล้ว! ใช้ asst1 + asst2 ไม่ใช่ sleep
+      
+      // ===== V21 แก้ตามขอ: เรียงผู้ช่วย 1 และ 2 ตามยศ ก่อนสร้างแบบฟอร์ม =====
+      let assistants = [row.asst1, row.asst2];
+      let sortedAssistants = sortByRank(assistants); // เรียงตามยศสูง->ต่ำ
+      
+      let team1 = [row.main, sortedAssistants[0], sortedAssistants[1]]; // ทีม 1: เวรหลัก + ผู้ช่วยที่เรียงตามยศแล้ว
       let team1Set = new Set(team1);
+      
       let mainCandidates = listMainOfficers.filter(n => !team1Set.has(n));
       if(mainCandidates.length === 0) mainCandidates = listMainOfficers.filter(n => n !== row.main);
       mainCandidates.sort((a,b) => (rankScore[b]||0) - (rankScore[a]||0));
@@ -515,6 +525,10 @@ function exportDailyPDF(){
       let rankOnly1 = getRankOnly(row.main);
       let rankOnly2 = getRankOnly(team2_p1);
 
+      // สำหรับแสดงยศใน PDF ว่าเรียงแล้ว
+      let asst1Rank = rankScore[sortedAssistants[0]] || 0;
+      let asst2Rank = rankScore[sortedAssistants[1]] || 0;
+
       html += `
         <div class="page">
           <div class="content">
@@ -526,8 +540,8 @@ function exportDailyPDF(){
               <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div>
               <div class="team-list">
                 ${toThaiDigits(1)}. ${expandRank(team1[0])}<br>
-                ${toThaiDigits(2)}. ${expandRank(team1[1])}<br>
-                ${toThaiDigits(3)}. ${expandRank(team1[2])}
+                ${toThaiDigits(2)}. ${expandRank(team1[1])} <span style="font-size:10pt; color:#666;">[ยศ ${getRankOnly(team1[1])} - เรียงลำดับ ${toThaiDigits(1)}]</span><br>
+                ${toThaiDigits(3)}. ${expandRank(team1[2])} <span style="font-size:10pt; color:#666;">[ยศ ${getRankOnly(team1[2])} - เรียงลำดับ ${toThaiDigits(2)}]</span>
               </div>
             </div>
             <div class="team">
@@ -554,7 +568,7 @@ function exportDailyPDF(){
               ลงชื่อ พ.ต.อ. <span class="sig-line"></span> ผู้ควบคุมชุดปฏิบัติการ
             </div>
           </div>
-          <div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(month)}/${toThaiDigits(year)} (${row.dayName})</div>
+          <div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(month)}/${toThaiDigits(year)} (${row.dayName}) | ชุดเวรหลัก ผู้ช่วยเรียงตามยศแล้ว</div>
         </div>`;
     });
     html += `</body></html>`;
@@ -564,7 +578,7 @@ function exportDailyPDF(){
     w.document.write(html);
     w.document.close();
     setTimeout(()=>{ w.focus(); w.print(); }, 800);
-    Swal.fire({icon: 'success', title: 'สร้าง PDF สำเร็จ', text: `แก้ทีม 1 แล้ว - ใช้ ผู้ช่วย 1 + ผู้ช่วย 2`, timer: 2500, showConfirmButton: false});
+    Swal.fire({icon: 'success', title: 'สร้าง PDF สำเร็จ V21', html: `เรียงผู้ช่วย 1-2 ตามยศแล้ว<br><small>ยศสูงอยู่บน ยศต่ำอยู่ล่าง</small>`, timer: 3000, showConfirmButton: false});
     
   }, 500);
 }
