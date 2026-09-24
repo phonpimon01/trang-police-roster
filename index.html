@@ -4,189 +4,61 @@
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>ระบบจัดตารางเวร พฐ.จว.ตรัง</title>
+  <title>ระบบจัดตารางเวร พฐ.จว.ตรัง V3</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <style>
-    :root {
-      --app-primary: #1c4587;
-      --app-dark: #120b2e;
-      --app-accent: #20124d;
-      --bg-color: #f0f4f8;
-    }
-
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background-color: var(--bg-color);
-      color: #333;
-      padding: 0;
-      margin: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .app-navbar {
-      background: linear-gradient(135deg, var(--app-primary) 0%, var(--app-dark) 100%);
-      color: white;
-      padding: 12px 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      position: sticky;
-      top: 0;
-      z-index: 1050;
-    }
-
-    .app-brand {
-      font-size: 1.15rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .app-card {
-      background: #ffffff;
-      border: none;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      margin-bottom: 20px;
-      transition: all 0.2s ease;
-    }
-
-    .table-container-app {
-      max-height: 72vh;
-      overflow-y: auto;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .table-app {
-      margin-bottom: 0;
-      white-space: nowrap;
-      font-size: 0.92rem;
-    }
-
-    .table-app th {
-      background-color: var(--app-dark);
-      color: white;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      padding: 12px 8px;
-    }
-
-    .table-app td {
-      vertical-align: middle;
-      text-align: center;
-      padding: 8px;
-    }
-
-    .select-name {
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      border: 1px solid #cbd5e1;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .input-summary-tune {
-      width: 55px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 8px;
-      border: 2px solid var(--app-primary);
-      background-color: #f1f5f9;
-    }
-
-    .badge-person {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.84rem;
-      display: inline-block;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    }
-
-    .btn-app-action {
-      border-radius: 10px;
-      font-weight: 600;
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .status-toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
-      border-radius: 12px;
-      padding: 12px 20px;
-      color: white;
-      font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .modal-content-app {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      border: none;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-    }
-
-    @media (max-width: 992px) {
-      .table-container-app { max-height: 58vh; }
-    }
+    :root { --app-primary: #1c4587; --app-dark: #120b2e; --bg-color: #f0f4f8; }
+    body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-color); color: #333; padding: 0; margin: 0; }
+    .app-navbar { background: linear-gradient(135deg, var(--app-primary) 0%, var(--app-dark) 100%); color: white; padding: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 1050; }
+    .app-brand { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .app-card { background: #ffffff; border: none; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); margin-bottom: 20px; }
+    .table-container-app { max-height: 72vh; overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
+    .table-app { margin-bottom: 0; white-space: nowrap; font-size: 0.92rem; }
+    .table-app th { background-color: var(--app-dark); color: white; text-align: center; position: sticky; top: 0; z-index: 10; padding: 12px 8px; }
+    .table-app td { vertical-align: middle; text-align: center; padding: 8px; }
+    .select-name { border-radius: 20px; padding: 4px 12px; font-weight: 600; font-size: 0.85rem; border: 1px solid #cbd5e1; }
+    .input-summary-tune { width: 55px; text-align: center; font-weight: bold; border-radius: 8px; border: 2px solid var(--app-primary); background-color: #f1f5f9; }
+    .badge-person { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.84rem; display: inline-block; }
+    .btn-app-action { border-radius: 10px; font-weight: 600; padding: 8px 16px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+    .status-toast { position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 12px; padding: 12px 20px; color: white; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-content-app { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
+    .manual-badge { background: #ff9800; color: #000; font-weight: 700; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%{opacity:1} 50%{opacity:0.6} 100%{opacity:1} }
   </style>
 </head>
 <body>
-
   <nav class="app-navbar d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div class="app-brand">
       <i class="fa-solid fa-shield-halved text-warning"></i>
-      <span>ระบบจัดตารางเวร พฐ.จว.ตรัง (Vercel Edition)</span>
+      <span>ระบบจัดตารางเวร พฐ.จว.ตรัง V3 Manual Lock</span>
+      <span id="manualModeBadge" class="badge manual-badge d-none ms-2">โหมดแก้ไขเอง</span>
     </div>
-    
     <div class="d-flex align-items-center gap-2 flex-wrap">
       <div class="input-group input-group-sm w-auto">
         <span class="input-group-text bg-dark text-white border-0">เดือน</span>
         <select id="monthSelect" class="form-select form-select-sm fw-bold" onchange="calculateNewRoster()">
-          <option value="9">กันยายน 2026</option>
+          <option value="9" selected>กันยายน 2026</option>
           <option value="10">ตุลาคม 2026</option>
           <option value="11">พฤศจิกายน 2026</option>
           <option value="12">ธันวาคม 2026</option>
+          <option value="1">มกราคม 2027</option>
+          <option value="2">กุมภาพันธ์ 2027</option>
         </select>
       </div>
-
       <button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster()" title="รีเฟรชดึงข้อมูลล่าสุด">
-        <i class="fa-solid fa-rotate"></i> <span class="d-none d-sm-inline">รีเฟรช</span>
+        <i class="fa-solid fa-rotate"></i> รีเฟรช
       </button>
-
       <button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="generateNewRosterConfirm()">
-        <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="d-none d-sm-inline">จัดใหม่</span>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> จัดใหม่ทั้งหมด
       </button>
-
-      <button class="btn btn-sm btn-primary btn-app-action" onclick="applyCustomQuotasAndRegenerate()">
-        <i class="fa-solid fa-sliders"></i> <span class="d-none d-sm-inline">อัปเดตตาราง</span>
+      <button class="btn btn-sm btn-outline-primary bg-white btn-app-action" onclick="recalculateOnly()">
+        <i class="fa-solid fa-calculator"></i> แค่คำนวณสรุป
       </button>
-
       <button class="btn btn-sm btn-success btn-app-action" onclick="saveToGoogleSheet()">
-        <i class="fa-solid fa-cloud-arrow-up"></i> <span class="d-none d-sm-inline">บันทึกลง Sheet</span>
+        <i class="fa-solid fa-cloud-arrow-up"></i> บันทึกลง Sheet
       </button>
     </div>
   </nav>
@@ -196,11 +68,10 @@
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
           <h6 class="fw-bold mb-1 text-dark">
-            <i class="fa-solid fa-circle-dot text-success me-2 animate-pulse"></i>สถานะเชื่อมโยง Vercel API Bridge
+            <i class="fa-solid fa-circle-dot text-success me-2"></i>สถานะเชื่อมโยง
           </h6>
-          <p class="mb-0 text-muted small" id="lblSyncStatus">
-            กำลังเชื่อมโยงกับฐานข้อมูล Google Sheet อัตโนมัติ...
-          </p>
+          <p class="mb-0 text-muted small" id="lblSyncStatus">กำลังเชื่อมโยงกับฐานข้อมูล Google Sheet...</p>
+          <p class="mb-0 text-muted small" id="lblRecommendation" style="white-space: pre-wrap;"></p>
         </div>
         <div class="text-secondary small">
           • เวรหลักเดือนก่อน: <b id="lblLastOfficer" class="text-primary">-</b> | ผู้ช่วย 1: <b id="lblLastAsst1" class="text-danger">-</b>
@@ -211,13 +82,10 @@
     <div class="row g-3">
       <div class="col-xl-7 col-lg-6">
         <div class="app-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold text-primary mb-0">
-              <i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ประจำวัน
-            </h5>
-            <span class="badge bg-info text-dark rounded-pill px-3 py-2"><i class="fa-solid fa-pen-to-square me-1"></i>แก้ไขสด Manual ได้ทันที</span>
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-calendar-days me-2"></i>ตารางปฏิบัติหน้าที่ประจำวัน</h5>
+            <span class="badge bg-info text-dark rounded-pill px-3 py-2"><i class="fa-solid fa-pen-to-square me-1"></i>แก้ไขสดได้ - ระบบจะไม่จัดใหม่เอง</span>
           </div>
-
           <div class="table-container-app">
             <table class="table table-bordered table-hover table-app">
               <thead>
@@ -240,41 +108,24 @@
         <div class="vstack gap-3">
           <div class="app-card p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold text-primary mb-0">
-                <i class="fa-solid fa-chart-pie me-2"></i>สรุปภาระงานรายบุคคลสุทธิ
-              </h6>
-              <span class="badge bg-primary rounded-pill">ปรับโควตาได้</span>
+              <h6 class="fw-bold text-primary mb-0"><i class="fa-solid fa-chart-pie me-2"></i>สรุปภาระงานรายบุคคลสุทธิ</h6>
+              <span class="badge bg-primary rounded-pill">แก้แล้วคำนวณทันที</span>
             </div>
-            <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
               <table class="table table-striped table-bordered align-middle table-app mb-0">
                 <thead class="table-dark">
-                  <tr>
-                    <th>รายชื่อ</th>
-                    <th>เวรหลัก</th>
-                    <th>ผู้ช่วย</th>
-                    <th>เวรนอน</th>
-                    <th>รวม</th>
-                  </tr>
+                  <tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th><th>เวรนอน</th><th>รวม</th></tr>
                 </thead>
                 <tbody id="summaryBody"></tbody>
               </table>
             </div>
           </div>
-
           <div class="app-card p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold text-success mb-0">
-                <i class="fa-solid fa-calendar-day me-2"></i>สถิติเวรเสาร์-อาทิตย์ (เวรหลัก & ผู้ช่วย 2)
-              </h6>
-            </div>
+            <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-calendar-day me-2"></i>สถิติเวรเสาร์-อาทิตย์</h6>
             <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
               <table class="table table-sm table-bordered align-middle table-app mb-0 small">
                 <thead class="table-success text-center">
-                  <tr>
-                    <th>รายชื่อ</th>
-                    <th>เวรหลัก (ส.-อา.)</th>
-                    <th>เวรผู้ช่วย 2 (ส.-อา.)</th>
-                  </tr>
+                  <tr><th>รายชื่อ</th><th>เวรหลัก (ส.-อา.)</th><th>เวรผู้ช่วย 2 (ส.-อา.)</th></tr>
                 </thead>
                 <tbody id="weekendStatsBody"></tbody>
               </table>
@@ -285,36 +136,33 @@
     </div>
   </div>
 
-  <div class="modal fade" id="statusModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal fade" id="statusModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-sm">
       <div class="modal-content modal-content-app text-center p-4">
         <div class="mb-3">
-          <div id="modalSpinner" class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-          <div id="modalSuccessIcon" class="d-none text-success" style="font-size: 3rem;">
-            <i class="fa-solid fa-circle-check"></i>
-          </div>
+          <div id="modalSpinner" class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+          <div id="modalSuccessIcon" class="d-none text-success" style="font-size: 3rem;"><i class="fa-solid fa-circle-check"></i></div>
         </div>
-        <h5 id="modalTitle" class="fw-bold mb-1 text-dark">กำลังซิงก์ข้อมูล...</h5>
+        <h5 id="modalTitle" class="fw-bold mb-1">กำลังซิงก์ข้อมูล...</h5>
         <p id="modalDetail" class="text-muted small mb-0">โปรดรอสักครู่</p>
       </div>
     </div>
   </div>
-
   <div id="toastAlert" class="status-toast bg-success d-none">
-    <i class="fa-solid fa-circle-check fs-5"></i>
-    <span id="toastMessage">อัปเดตสำเร็จ!</span>
+    <i class="fa-solid fa-circle-check fs-5"></i><span id="toastMessage">สำเร็จ!</span>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ⚠️ นำ Web App URL ที่ได้จากขั้นตอนการ Deploy ใน Google Apps Script มาใส่ในเครื่องหมายคำพูดนี้
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzYKTOQYaRWF--5vx1ReHyPSDX1gvRf1ZyWcq0WEX39Kj3Da7diYkACgqtTwb5VGitA_w/exec";
+    // <<< ใส่ Web App URL ของคุณตรงนี้ >>>
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyjPxiF3f3aK9YpX85APWyHUJUhKLbvxvDN-UUQRqEM_OJolMdIJM__WD7KKp79Ct7fqA/exec";
 
     var currentData = null;
     var statusModal = null;
+    var isManualMode = false;
+
     var editableMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
     var assistantOfficers = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์", "ด.ต.หญิง ธมนวรรณ"];
-    
     var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
     var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
     var listAsst2 = ["ด.ต.หญิง ธมนวรรณ"].concat(listMainOfficers);
@@ -337,10 +185,7 @@
     window.onload = function() {
       statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
       calculateNewRoster();
-
-      setInterval(function() {
-        silentBackgroundSync();
-      }, 10000);
+      setInterval(silentBackgroundSync, 30000); // 30 วิ พอ ลดโควตา
     };
 
     function showModal(title, detail) {
@@ -350,22 +195,20 @@
       document.getElementById("modalSuccessIcon").classList.add("d-none");
       statusModal.show();
     }
-
     function showModalSuccess(title, detail) {
       document.getElementById("modalTitle").innerText = title;
       document.getElementById("modalDetail").innerText = detail;
       document.getElementById("modalSpinner").classList.add("d-none");
       document.getElementById("modalSuccessIcon").classList.remove("d-none");
-      setTimeout(function() { statusModal.hide(); }, 1000);
+      setTimeout(function() { statusModal.hide(); }, 1200);
     }
-
-    function showToast(message) {
+    function showToast(message, isError) {
       var toast = document.getElementById("toastAlert");
       document.getElementById("toastMessage").innerText = message;
+      toast.className = "status-toast " + (isError? "bg-danger" : "bg-success");
       toast.classList.remove("d-none");
-      setTimeout(function() { toast.classList.add("d-none"); }, 2200);
+      setTimeout(function() { toast.classList.add("d-none"); }, 3000);
     }
-
     function renderBadge(name) {
       if (!name) return "-";
       var style = colorMap[name] || { bg: "#e0e0e0", text: "#000" };
@@ -373,95 +216,99 @@
     }
 
     async function calculateNewRoster() {
-      showModal("กำลังเชื่อมโยงข้อมูล...", "ดึงข้อมูลล่าสุดจาก Google Sheet และ Co-Work Sync");
+      showModal("กำลังเชื่อมโยงข้อมูล...", "ดึงข้อมูลล่าสุดจาก Google Sheet");
       var month = parseInt(document.getElementById("monthSelect").value);
-
       try {
         let response = await fetch(`${GAS_API_URL}?action=getRoster&year=2026&month=${month}`);
         let data = await response.json();
         currentData = data;
+        isManualMode = false;
+        document.getElementById("manualModeBadge").classList.add("d-none");
+        if (!currentData.lockedFixes) currentData.lockedFixes = {};
         renderWebPage();
         updateSyncStatusUI(data.isFromSheet, data.prevContext);
-        showModalSuccess("สำเร็จ!", data.isFromSheet ? "ดึงข้อมูลจาก Google Sheet สำเร็จ" : "สร้างตารางใหม่เรียบร้อย");
+        showModalSuccess("สำเร็จ!", data.isFromSheet ? "ดึงข้อมูลจาก Google Sheet" : "สร้างตารางใหม่เรียบร้อย");
       } catch (error) {
         statusModal.hide();
-        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error);
+        alert("โหลดข้อมูลไม่ได้: " + error);
       }
     }
 
     async function silentBackgroundSync() {
+      if (isManualMode || !currentData) return; // สำคัญ: ถ้าแก้เอง ห้ามซิงก์ทับ
       var month = parseInt(document.getElementById("monthSelect").value);
       try {
         let response = await fetch(`${GAS_API_URL}?action=getRoster&year=2026&month=${month}`);
         let data = await response.json();
-        if (data && currentData) {
-          var isDifferent = JSON.stringify(data.roster) !== JSON.stringify(currentData.roster);
-          if (isDifferent) {
+        if (data && data.lastModified > currentData.lastModified && data.isFromSheet) {
+          if (confirm("พบว่ามีคนอื่นบันทึกตารางใหม่บน Google Sheet คุณต้องการโหลดทับหรือไม่?")) {
             currentData = data;
             renderWebPage();
-            showToast("🔄 ตรวจพบการเปลี่ยนแปลง! ซิงก์ข้อมูลให้เป็นปัจจุบันแล้ว");
+            showToast("โหลดข้อมูลใหม่แล้ว");
           }
         }
-      } catch (e) {
-        console.error("Background sync failed", e);
-      }
+      } catch (e) { console.log("sync skip"); }
     }
 
     async function generateNewRosterConfirm() {
-      if (confirm("คุณต้องการล้างและจัดตารางใหม่ด้วยระบบอัตโนมัติใช่หรือไม่?")) {
-        showModal("กำลังจัดตารางใหม่...", "ระบบกำลังคำนวณโควตาใหม่ทั้งหมด");
-        var month = parseInt(document.getElementById("monthSelect").value);
-        
-        try {
-          let response = await fetch(`${GAS_API_URL}?action=generateNewRoster&year=2026&month=${month}`);
-          let data = await response.json();
-          currentData = data;
-          renderWebPage();
-          showModalSuccess("สำเร็จ!", "สร้างตารางเวรใหม่เรียบร้อยแล้ว");
-        } catch (error) {
-          statusModal.hide();
-          alert("เกิดข้อผิดพลาด: " + error);
-        }
+      if (!confirm("คุณต้องการล้างและจัดตารางใหม่ด้วยระบบอัตโนมัติทั้งหมดใช่หรือไม่?\nงานที่แก้เองจะหายไป")) return;
+      showModal("กำลังจัดตารางใหม่...", "ระบบกำลังคำนวณโควตาใหม่ทั้งหมด");
+      var month = parseInt(document.getElementById("monthSelect").value);
+      try {
+        let response = await fetch(`${GAS_API_URL}?action=generateNewRoster&year=2026&month=${month}`);
+        let data = await response.json();
+        currentData = data;
+        isManualMode = false;
+        document.getElementById("manualModeBadge").classList.add("d-none");
+        currentData.lockedFixes = {};
+        renderWebPage();
+        showModalSuccess("สำเร็จ!", "สร้างตารางเวรใหม่เรียบร้อยแล้ว");
+      } catch (error) {
+        statusModal.hide();
+        alert("เกิดข้อผิดพลาด: " + error);
       }
     }
 
-    async function applyCustomQuotasAndRegenerate() {
+    function recalculateOnly() {
       if (!currentData) return;
-      var customQuotas = {};
+      recalculateSummaryInMemory();
+      renderSummaryTable();
+      renderWeekendStatsTable();
+      showToast("คำนวณสรุปใหม่เรียบร้อย (ไม่ได้จัดเวรใหม่)");
+    }
 
+    async function applyCustomQuotasAndRegenerate() {
+      // ฟังก์ชันนี้ยังคงไว้สำหรับกรณีต้องการจัดใหม่ตามโควตาที่กรอก
+      if (isManualMode) {
+        if (!confirm("คุณอยู่ในโหมดแก้ไขเอง การจัดใหม่จะทับสิ่งที่คุณแก้ไว้ทั้งหมด\nต้องการดำเนินการต่อหรือไม่?")) return;
+      }
+      var customQuotas = {};
+      if (currentData.lockedFixes) Object.assign(customQuotas, currentData.lockedFixes);
+      
       currentData.summary.forEach(function(s) {
         if (editableMainOfficers.includes(s.name)) {
-          var inputMainEl = document.getElementById("tune_main_" + s.name);
-          if (inputMainEl) {
-            customQuotas["main_" + s.name] = parseInt(inputMainEl.value) || s.main;
-          }
+          var el = document.getElementById("tune_main_" + s.name);
+          if (el) customQuotas["main_" + s.name] = parseInt(el.value) || s.main;
         }
         if (assistantOfficers.includes(s.name)) {
-          var inputSleepEl = document.getElementById("tune_sleep_" + s.name);
-          if (inputSleepEl) {
-            customQuotas["sleep_" + s.name] = parseInt(inputSleepEl.value) || s.sleep;
-          }
+          var el2 = document.getElementById("tune_sleep_" + s.name);
+          if (el2) customQuotas["sleep_" + s.name] = parseInt(el2.value) || s.sleep;
         }
       });
 
       showModal("กำลังประมวลผลตาราง...", "ระบบกำลังปรับเกลี่ยตามโควตาที่คุณกำหนด");
       var month = parseInt(document.getElementById("monthSelect").value);
-
       try {
-        let response = await fetch(`${GAS_API_URL}`, {
+        let response = await fetch(GAS_API_URL, {
           method: 'POST',
-          body: JSON.stringify({
-            action: 'generateWithQuotas',
-            year: 2026,
-            month: month,
-            customQuotas: customQuotas
-          })
+          body: JSON.stringify({ action: 'generateWithQuotas', year: 2026, month: month, customQuotas: customQuotas })
         });
         let data = await response.json();
         currentData = data;
+        isManualMode = false;
+        document.getElementById("manualModeBadge").classList.add("d-none");
         renderWebPage();
-        showModalSuccess("อัปเดตสำเร็จ!", "ปรับตารางเวรตามโควตาเรียบร้อยแล้ว");
-        showToast("อัปเดตตารางเวรสำเร็จ!");
+        showModalSuccess("สำเร็จ!", "ปรับตารางเวรตามโควตาเรียบร้อยแล้ว");
       } catch (error) {
         statusModal.hide();
         alert("เกิดข้อผิดพลาด: " + error);
@@ -470,21 +317,20 @@
 
     function updateSyncStatusUI(isFromSheet, prevContext) {
       if (prevContext) {
-        document.getElementById("lblLastOfficer").innerText = prevContext.lastOfficer;
-        document.getElementById("lblLastAsst1").innerText = prevContext.lastAsst1;
+        document.getElementById("lblLastOfficer").innerText = prevContext.lastOfficer || "-";
+        document.getElementById("lblLastAsst1").innerText = prevContext.lastAsst1 || "-";
+        document.getElementById("lblRecommendation").innerText = prevContext.recommendation || "";
       }
-      
       var syncLabel = document.getElementById("lblSyncStatus");
       if (isFromSheet) {
-        syncLabel.innerHTML = "<b class='text-success'><i class='fa-solid fa-cloud-arrow-down me-1'></i>เชื่อมโยงสมบูรณ์กับ Google Sheet (Vercel Co-Work Active)</b>";
+        syncLabel.innerHTML = "<b class='text-success'><i class='fa-solid fa-cloud-arrow-down me-1'></i>เชื่อมโยงสมบูรณ์กับ Google Sheet (ข้อมูลล่าสุดจาก Sheet)</b>";
       } else {
-        syncLabel.innerHTML = "<b class='text-primary'><i class='fa-solid fa-triangle-exclamation me-1'></i>ข้อมูลใหม่ยังไม่ได้บันทึกลง Sheet (กดปุ่ม 'บันทึกลง Sheet' เพื่อแชร์ให้ผู้อื่น)</b>";
+        syncLabel.innerHTML = "<b class='text-primary'><i class='fa-solid fa-triangle-exclamation me-1'></i>ข้อมูลใหม่ยังไม่ได้บันทึกลง Sheet (ต้องกด 'บันทึกลง Sheet')</b>";
       }
     }
 
     function renderWebPage() {
       if (!currentData) return;
-
       var dHtml = "";
       currentData.roster.forEach(function(row, idx) {
         dHtml += "<tr>" +
@@ -497,117 +343,95 @@
           "</tr>";
       });
       document.getElementById("dutyBody").innerHTML = dHtml;
-
       renderSummaryTable();
       renderWeekendStatsTable();
     }
 
     function createDropdown(rowIndex, colType, selectedName, relevantList) {
       var style = colorMap[selectedName] || { bg: "#ffffff", text: "#000000" };
-      var html = '<select class="form-select select-name" style="background-color:' + style.bg + '; color:' + style.text + ';" onchange="updateDutyPerson(' + rowIndex + ', \'' + colType + '\', this.value)">';
+      var html = '<select class="form-select select-name" style="background-color:' + style.bg + '; color:' + style.text + ';" onchange="updateDutyPerson(' + rowIndex + ', \'' + colType + '\', this.value, this)">';
       relevantList.forEach(function(name) {
-        var selected = (name === selectedName) ? "selected" : "";
-        html += '<option value="' + name + '" ' + selected + '>' + name + '</option>';
+        html += '<option value="' + name + '" ' + (name === selectedName? "selected" : "") + '>' + name + '</option>';
       });
       html += '</select>';
       return html;
     }
 
-    function updateDutyPerson(rowIndex, colType, newName) {
+    function updateDutyPerson(rowIndex, colType, newName, selectElement) {
+      // --- จุดแก้ไขสำคัญ: เข้าโหมด Manual ---
+      isManualMode = true;
+      document.getElementById("manualModeBadge").classList.remove("d-none");
+      if (!currentData.lockedFixes) currentData.lockedFixes = {};
+      
+      // เก็บค่าที่ล็อคไว้
       currentData.roster[rowIndex][colType] = newName;
+      if (colType === 'main') {
+        currentData.lockedFixes["fixed_main_" + currentData.roster[rowIndex].day] = newName;
+      }
+
+      // เปลี่ยนสีทันที
+      var style = colorMap[newName] || { bg: "#ffffff", text: "#000000" };
+      selectElement.style.backgroundColor = style.bg;
+      selectElement.style.color = style.text;
+
+      // คำนวณเฉพาะในเครื่อง ไม่เรียก API
       recalculateSummaryInMemory();
       renderSummaryTable();
       renderWeekendStatsTable();
-      showToast("แก้ไขรายชื่อเรียบร้อย!");
+
+      var editedCount = Object.keys(currentData.lockedFixes).length;
+      document.getElementById("lblSyncStatus").innerHTML = "<b class='text-warning'><i class='fa-solid fa-pen-to-square me-1'></i>โหมดแก้ไขเอง - แก้ไขแล้ว " + editedCount + " จุด (ยังไม่บันทึก) - ระบบจะไม่จัดใหม่เอง</b>";
+      showToast("แก้ไขแล้ว! นับสรุปใหม่ให้แล้ว");
     }
 
     function recalculateSummaryInMemory() {
       var summaryMap = {};
       var allNames = currentData.allOfficers;
-      allNames.forEach(function(name) {
-        summaryMap[name] = { main: 0, asst: 0, sleep: 0, total: 0 };
-      });
-
+      allNames.forEach(function(name) { summaryMap[name] = { main: 0, asst: 0, sleep: 0 }; });
       currentData.roster.forEach(function(row) {
-        if (summaryMap[row.main]) summaryMap[row.main].main++;
-        if (summaryMap[row.asst1]) summaryMap[row.asst1].asst++;
-        if (summaryMap[row.asst2]) summaryMap[row.asst2].asst++;
-        if (summaryMap[row.sleep]) summaryMap[row.sleep].sleep++;
+        if (summaryMap[row.main] !== undefined) summaryMap[row.main].main++;
+        if (summaryMap[row.asst1] !== undefined) summaryMap[row.asst1].asst++;
+        if (summaryMap[row.asst2] !== undefined) summaryMap[row.asst2].asst++;
+        if (summaryMap[row.sleep] !== undefined) summaryMap[row.sleep].sleep++;
       });
-
       currentData.summary = [];
       allNames.forEach(function(name) {
         var item = summaryMap[name];
-        currentData.summary.push({
-          name: name,
-          main: item.main,
-          asst: item.asst,
-          sleep: item.sleep,
-          total: item.main + item.asst + item.sleep
-        });
+        currentData.summary.push({ name: name, main: item.main, asst: item.asst, sleep: item.sleep, total: item.main + item.asst + item.sleep });
       });
-
+      // Weekend stats
       var weekendStatsMap = {};
-      listMainOfficers.forEach(function(name) {
-        weekendStatsMap[name] = { mainCount: 0, mainDates: [], asst2Count: 0, asst2Dates: [] };
-      });
-
+      listMainOfficers.forEach(function(name) { weekendStatsMap[name] = { mainCount: 0, mainDates: [], asst2Count: 0, asst2Dates: [] }; });
       currentData.roster.forEach(function(row) {
         if (row.dayName === "วันเสาร์" || row.dayName === "วันอาทิตย์") {
-          var m = row.main;
-          if (weekendStatsMap[m]) {
-            weekendStatsMap[m].mainCount++;
-            weekendStatsMap[m].mainDates.push(row.day + "(" + row.dayName.replace("วัน", "") + ")");
-          }
-          var a2 = row.asst2;
-          if (weekendStatsMap[a2]) {
-            weekendStatsMap[a2].asst2Count++;
-            weekendStatsMap[a2].asst2Dates.push(row.day + "(" + row.dayName.replace("วัน", "") + ")");
-          }
+          if (weekendStatsMap[row.main]) { weekendStatsMap[row.main].mainCount++; weekendStatsMap[row.main].mainDates.push(row.day); }
+          if (weekendStatsMap[row.asst2]) { weekendStatsMap[row.asst2].asst2Count++; weekendStatsMap[row.asst2].asst2Dates.push(row.day); }
         }
       });
-
       currentData.weekendStats = {};
       listMainOfficers.forEach(function(name) {
-        currentData.weekendStats[name] = {
-          mainWeekendCount: weekendStatsMap[name].mainCount,
-          mainDates: weekendStatsMap[name].mainDates,
-          asst2WeekendCount: weekendStatsMap[name].asst2Count,
-          asst2Dates: weekendStatsMap[name].asst2Dates
-        };
+        currentData.weekendStats[name] = { mainWeekendCount: weekendStatsMap[name].mainCount, mainDates: weekendStatsMap[name].mainDates, asst2WeekendCount: weekendStatsMap[name].asst2Count, asst2Dates: weekendStatsMap[name].asst2Dates };
       });
     }
 
     function renderSummaryTable() {
       var sHtml = "";
       currentData.summary.forEach(function(s) {
-        sHtml += "<tr>" +
-          "<td>" + renderBadge(s.name) + "</td>";
-          
-          if (editableMainOfficers.includes(s.name)) {
-            sHtml += "<td class='text-center'>" +
-              "<input type='number' class='form-control form-control-sm input-summary-tune d-inline-block' " +
-              "id='tune_main_" + s.name + "' value='" + s.main + "' min='0' max='31'>" +
-              "</td>";
-          } else if (s.name === "พ.ต.ต.หญิง พัชราภรณ์" || s.name === "ร.ต.ท.กิตติศักดิ์") {
-            sHtml += "<td class='text-center'>" + s.main + " วัน <span class='text-muted small'>(เฉลี่ย)</span></td>";
-          } else {
-            sHtml += "<td class='text-center'>" + s.main + " วัน</td>";
-          }
-
-          sHtml += "<td class='text-center'>" + s.asst + " วัน</td>";
-
-          if (assistantOfficers.includes(s.name)) {
-            sHtml += "<td class='text-center'>" +
-              "<input type='number' class='form-control form-control-sm input-summary-tune d-inline-block' " +
-              "id='tune_sleep_" + s.name + "' value='" + s.sleep + "' min='0' max='31'>" +
-              "</td>";
-          } else {
-            sHtml += "<td class='text-center text-muted'>-</td>";
-          }
-
-          sHtml += "<td class='text-center'><b class='text-primary'>" + s.total + " วัน</b></td>" +
-          "</tr>";
+        sHtml += "<tr><td>" + renderBadge(s.name) + "</td>";
+        if (editableMainOfficers.includes(s.name)) {
+          sHtml += "<td><input type='number' class='form-control form-control-sm input-summary-tune d-inline-block' id='tune_main_" + s.name + "' value='" + s.main + "' min='0' max='31'></td>";
+        } else if (s.name === "พ.ต.ต.หญิง พัชราภรณ์" || s.name === "ร.ต.ท.กิตติศักดิ์") {
+          sHtml += "<td>" + s.main + " วัน <span class='text-muted small'>(เฉลี่ย)</span></td>";
+        } else {
+          sHtml += "<td>" + s.main + " วัน</td>";
+        }
+        sHtml += "<td>" + s.asst + " วัน</td>";
+        if (assistantOfficers.includes(s.name)) {
+          sHtml += "<td><input type='number' class='form-control form-control-sm input-summary-tune d-inline-block' id='tune_sleep_" + s.name + "' value='" + s.sleep + "' min='0' max='31'></td>";
+        } else {
+          sHtml += "<td class='text-muted'>-</td>";
+        }
+        sHtml += "<td><b class='text-primary'>" + s.total + " วัน</b></td></tr>";
       });
       document.getElementById("summaryBody").innerHTML = sHtml;
     }
@@ -615,21 +439,12 @@
     function renderWeekendStatsTable() {
       var tbody = document.getElementById("weekendStatsBody");
       if (!tbody || !currentData.weekendStats) return;
-
       var html = "";
       listMainOfficers.forEach(function(name) {
         var stat = currentData.weekendStats[name] || { mainWeekendCount: 0, mainDates: [], asst2WeekendCount: 0, asst2Dates: [] };
-        html += "<tr>" +
-          "<td>" + renderBadge(name) + "</td>" +
-          "<td class='text-center'>" +
-            "<b class='text-success'>" + stat.mainWeekendCount + " วัน</b><br>" +
-            "<small class='text-muted'>" + (stat.mainDates.join(", ") || "-") + "</small>" +
-          "</td>" +
-          "<td class='text-center'>" +
-            "<b class='text-primary'>" + stat.asst2WeekendCount + " วัน</b><br>" +
-            "<small class='text-muted'>" + (stat.asst2Dates.join(", ") || "-") + "</small>" +
-          "</td>" +
-          "</tr>";
+        html += "<tr><td>" + renderBadge(name) + "</td>" +
+          "<td class='text-center'><b class='text-success'>" + stat.mainWeekendCount + " วัน</b><br><small class='text-muted'>" + (stat.mainDates.join(", ") || "-") + "</small></td>" +
+          "<td class='text-center'><b class='text-primary'>" + stat.asst2WeekendCount + " วัน</b><br><small class='text-muted'>" + (stat.asst2Dates.join(", ") || "-") + "</small></td></tr>";
       });
       tbody.innerHTML = html;
     }
@@ -637,21 +452,20 @@
     async function saveToGoogleSheet() {
       if (!currentData) return;
       showModal("กำลังบันทึกและซิงก์...", "บันทึกข้อมูลตารางเวรทั้งหมดลง Google Sheet");
-
       try {
-        let response = await fetch(`${GAS_API_URL}`, {
+        let response = await fetch(GAS_API_URL, {
           method: 'POST',
-          body: JSON.stringify({
-            action: 'saveRoster',
-            finalData: currentData
-          })
+          body: JSON.stringify({ action: 'saveRoster', finalData: currentData })
         });
         let res = await response.json();
         showModalSuccess("บันทึกสำเร็จ!", res.message);
-        document.getElementById("lblSyncStatus").innerHTML = "<b class='text-success'><i class='fa-solid fa-cloud-arrow-down me-1'></i>เชื่อมโยงสมบูรณ์กับ Google Sheet (Vercel Co-Work Active)</b>";
+        isManualMode = false;
+        document.getElementById("manualModeBadge").classList.add("d-none");
+        currentData.lockedFixes = {};
+        document.getElementById("lblSyncStatus").innerHTML = "<b class='text-success'><i class='fa-solid fa-cloud-arrow-down me-1'></i>เชื่อมโยงสมบูรณ์กับ Google Sheet - บันทึกแล้ว</b>";
       } catch (error) {
         statusModal.hide();
-        alert("เกิดข้อผิดพลาดในการบันทึก: " + error);
+        alert("บันทึกไม่ได้: " + error);
       }
     }
   </script>
