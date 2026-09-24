@@ -63,7 +63,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 </div>
 <div class="d-flex gap-2">
 <button class="btn btn-sm btn-outline-secondary" onclick="toggleDebug()"><i class="fa-solid fa-bug"></i></button>
-<small class="text-muted d-none d-lg-inline">V38 - แบบฟอร์มครบ + เชื่อมต่อแก้แล้ว + วันที่เป็นตัวเลข + ไฮไลต์ ส-อา</small>
+<small class="text-muted d-none d-lg-inline">V38 - แบบฟอร์มครบ + ชื่อ/ยศถูกต้อง + ไฮไลต์ ส-อา</small>
 </div>
 </div>
 
@@ -117,14 +117,28 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-let GAS_API_URL = localStorage.getItem('GAS_API_URL_V38') || "https://https://script.google.com/macros/s/AKfycbyrThKLLtknRVZWcbpXjDFE1GD8fehrofoAtnA6GYNOUW-Tz8nf9vJsmxOOjfPVyJxQgA/exec";
+let GAS_API_URL = localStorage.getItem('GAS_API_URL_V38') || "https://script.google.com/macros/s/AKfycbzHbDP0UsGcM9fLuDkqg5NBS9r5v1hT-m7-_aSEeKDN4mXNwFDlsMbReaRFf133hRxi/exec";
 var currentData = null; var originalSummary = null;
 var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
 var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
 var listAsst2 = ["ด.ต.หญิง ธมนวรรณ"].concat(listMainOfficers);
 var listSleep = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์", "ด.ต.หญิง ธมนวรรณ"];
 var colorMap = {"พ.ต.ท.หญิง พัชรี": { bg: "#fce5cd", text: "#783f04" },"พ.ต.ท.หญิง อลิษา": { bg: "#ead1dc", text: "#4c1130" },"พ.ต.ต.หญิง พัชราภรณ์": { bg: "#fff2cc", text: "#7f6000" },"ร.ต.ท.กิตติศักดิ์": { bg: "#f4ccd3", text: "#741b47" },"พ.ต.ต.พรพิมล": { bg: "#d9ead3", text: "#274e13" },"ร.ต.อ.นัสรอน": { bg: "#c9daf8", text: "#1c4587" },"ร.ต.ท.รณชัช": { bg: "#d9d2e9", text: "#20124d" },"ร.ต.ต.พรณรงค์": { bg: "#d0e0e3", text: "#134f5c" },"ว่าที่ ร.ต.ต.สุริยา": { bg: "#f5e5d3", text: "#5b3f11" },"จ.ส.ต.ปิติพงษ์": { bg: "#e1d5e7", text: "#351c75" },"ด.ต.หญิง ธมนวรรณ": { bg: "#efefef", text: "#434343" }};
-var FULL_NAME_MAP_ORIGINAL = {"ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร","ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี","จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ชัยเพชร","ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร","พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์","พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา จันทร์ศรี","พ.ต.ต.หญิง พัชราภรณ์": "พ.ต.ต.หญิง พัชราภรณ์ สุขเกษม","ร.ต.ท.กิตติศักดิ์": "ร.ต.ท. กิตติศักดิ์ ชูช่วย","พ.ต.ต.พรพิมล": "ว่าที่ พ.ต.ต. พรพิมล คงชัย","ร.ต.อ.นัสรอน": "ร.ต.อ. นัสรอน ดอเลาะ","ร.ต.ท.รณชัช": "ร.ต.ท. รณชัช บุญช่วย"};
+
+// อัปเดตรายชื่อและยศใหม่ที่ถูกต้องตามที่คุณต้องการ
+var FULL_NAME_MAP_ORIGINAL = {
+  "พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์",
+  "พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา ตาวัน",
+  "พ.ต.ต.หญิง พัชราภรณ์": "ว่าที่ พ.ต.ต.หญิง พัชราภรณ์ อะนันต์",
+  "พ.ต.ต.พรพิมล": "ว่าที่ พ.ต.ต.พรพิมล คงชัย",
+  "ร.ต.อ.นัสรอน": "ว่าที่ ร.ต.อ.นัสรอน หมัดบินเฮด",
+  "ร.ต.ท.รณชัช": "ร.ต.ท.รณชัช พิษพันธ์",
+  "ร.ต.ท.กิตติศักดิ์": "ร.ต.ท.กิตติศักดิ์ จันทแก้ว",
+  "ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร",
+  "ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี",
+  "จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ชัยเพชร",
+  "ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร"
+};
 var FULL_NAME_MAP = JSON.parse(JSON.stringify(FULL_NAME_MAP_ORIGINAL));
 var SLEEP_PERSONS = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์", "ด.ต.หญิง ธมนวรรณ"];
 function getSleepAuto(a1,a2){ if(a2==="ด.ต.หญิง ธมนวรรณ") return a2; if(SLEEP_PERSONS.indexOf(a1)!==-1) return a1; if(SLEEP_PERSONS.indexOf(a2)!==-1) return a2; return a1; }
@@ -146,11 +160,11 @@ async function fetchWithRetry(url){ try{ const res=await fetch(url, {cache:'no-s
 function toggleNameEditor(){ var el=document.getElementById('nameEditor'); if(el.classList.contains('show')){ bootstrap.Collapse.getInstance(el).hide(); } else { new bootstrap.Collapse(el, {toggle:true}); initFullNameEditor(); } }
 function initFullNameEditor(){ var html=""; Object.keys(FULL_NAME_MAP).forEach(function(k){ var v=FULL_NAME_MAP[k]; html+=`<div class="col-md-6"><div class="input-group input-group-sm mb-1"><span class="input-group-text" style="min-width:135px; font-size:0.85rem;">${k}</span><input type="text" class="form-control" id="fn_${k}" value="${v}"></div></div>`; }); document.getElementById('fullnameEditorBody').innerHTML=html; }
 function saveFullNames(){ Object.keys(FULL_NAME_MAP).forEach(function(k){ var el=document.getElementById('fn_'+k); if(el) FULL_NAME_MAP[k]=el.value.trim(); }); localStorage.setItem('fullNameMap_V38', JSON.stringify(FULL_NAME_MAP)); Swal.fire({icon:'success', title:'บันทึกชื่อแล้ว', timer:1000, showConfirmButton:false}); }
-function resetFullNames(){ FULL_NAME_MAP=JSON.parse(JSON.stringify(FULL_NAME_MAP_ORIGINAL)); FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"]="จ.ส.ต. ปิติพงษ์ ชัยเพชร"; initFullNameEditor(); localStorage.removeItem('fullNameMap_V38'); }
+function resetFullNames(){ FULL_NAME_MAP=JSON.parse(JSON.stringify(FULL_NAME_MAP_ORIGINAL)); initFullNameEditor(); localStorage.removeItem('fullNameMap_V38'); }
 function initYearMonth(){ const ys=document.getElementById('yearSelect'); const ms=document.getElementById('monthSelect'); ys.innerHTML=''; for(let y=2026;y<=2036;y++){ let o=document.createElement('option'); o.value=y; o.text=`พ.ศ. ${y+543}`; if(y===2026) o.selected=true; ys.appendChild(o); } ms.innerHTML=''; for(let m=1;m<=12;m++){ let o=document.createElement('option'); o.value=m; o.text=THAI_MONTHS[m]; ms.appendChild(o); } ms.value=10; updateSheetName(); }
 function updateSheetName(){ const y=document.getElementById('yearSelect').value; const m=document.getElementById('monthSelect').value; if(y&&m){ document.getElementById('currentSheetName').innerText=`${y}-${m}`; document.getElementById('tableSubTitle').innerText=`${y}-${m}`; } }
 function onYearChange(){ updateSheetName(); calculateNewRoster(true); }
-window.onload=function(){ try{ var s=localStorage.getItem('fullNameMap_V38'); if(s){ var p=JSON.parse(s); Object.keys(p).forEach(k=>{ FULL_NAME_MAP[k]=p[k]; }); } }catch(e){} FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"]="จ.ส.ต. ปิติพงษ์ ชัยเพชร"; document.getElementById('gasUrlInput').value=GAS_API_URL; initYearMonth(); calculateNewRoster(true); };
+window.onload=function(){ try{ var s=localStorage.getItem('fullNameMap_V38'); if(s){ var p=JSON.parse(s); Object.keys(p).forEach(k=>{ FULL_NAME_MAP[k]=p[k]; }); } }catch(e){} document.getElementById('gasUrlInput').value=GAS_API_URL; initYearMonth(); calculateNewRoster(true); };
 function renderBadge(n){ var s=colorMap[n]||{bg:"#e0e0e0",text:"#000"}; return `<span class="badge-person" style="background:${s.bg};color:${s.text}">${n}</span>`; }
 
 async function calculateNewRoster(showPopup, forceRefresh=false){
@@ -268,7 +282,6 @@ async function saveToGoogleSheet(){
   finally{ document.getElementById('btnSave').disabled=false; document.getElementById('btnSave').innerHTML=`<i class="fa-solid fa-cloud-arrow-up"></i> บันทึก`; }
 }
 
-// ===== ระบบสร้างแบบฟอร์มที่หายไป - กลับมาแล้ว =====
 function expandFullName(shortName){
   try{ var saved=localStorage.getItem('fullNameMap_V38'); if(saved){ var map=JSON.parse(saved); if(map[shortName]) return map[shortName]; } }catch(e){}
   if(FULL_NAME_MAP[shortName]) return FULL_NAME_MAP[shortName];
@@ -278,7 +291,6 @@ function expandFullName(shortName){
 function exportDailyPDF(){
   if(!currentData||!currentData.roster){ Swal.fire({icon:'warning', title:'ไม่มีข้อมูล'}); return; }
   let year=currentData.year; let month=currentData.month;
-  // แบบฟอร์มรายวันแบบเต็มตาม V35 เดิม
   let html=`<html><head><meta charset="utf-8">
   <style>
     @page { size: A4; margin: 12mm; }
@@ -295,7 +307,6 @@ function exportDailyPDF(){
     .signature{margin-top:12mm; line-height:2.5;}
     .sig-line{display:inline-block; border-bottom:1px dotted #000; width:280px; margin:0 8px;}
     .footer{text-align:center; font-size:10pt; border-top:1px dashed #999; padding-top:3mm; margin-top:auto;}
-    .stamp{border:2px solid #000; padding:2mm 4mm; display:inline-block; margin-top:4mm; font-size:14pt;}
   </style>
   </head><body>`;
   
