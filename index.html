@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - V37 FIX Failed to fetch</title>
+<title>ระบบจัดตารางเวร พฐ.จว.ตรัง - V36 FIX CONNECTION</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,6 +20,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 .badge-person { padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; display: inline-block; }
 .btn-app-action { border-radius: 10px; font-weight: 600; padding: 7px 14px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; }
 .manual-badge { background: #ff9800; color: #000; font-weight: 700; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.8; } }
 .online-badge { background: #198754; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; }
 .offline-badge { background: #dc3545; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; }
 .status-bar { background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #1c4587; border-radius: 12px; padding: 10px 14px; }
@@ -38,7 +39,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 <div style="font-weight:700; display:flex; align-items:center; gap:10px; font-size:1rem;">
 <i class="fa-solid fa-shield-halved text-warning"></i>
 <span>ระบบจัดตารางเวร พฐ.จว.ตรัง</span>
-<span style="background:linear-gradient(135deg,#16a34a,#22c55e); color:white; padding:5px 10px; border-radius:20px; font-size:0.75rem; font-weight:700;">V37 FIX FETCH</span>
+<span style="background:linear-gradient(135deg,#ef4444,#dc2626); color:white; padding:5px 10px; border-radius:20px; font-size:0.75rem; font-weight:700;">V36 FIX CONNECT</span>
 <span id="onlineBadge" class="online-badge d-none">ออนไลน์</span>
 <span id="offlineBadge" class="offline-badge d-none">ออฟไลน์</span>
 <span id="manualModeBadge" class="badge manual-badge d-none">ยังไม่ได้บันทึก</span>
@@ -48,7 +49,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 <select id="yearSelect" class="form-select form-select-sm fw-bold" style="min-width:125px; border-radius:10px 0 0 10px;" onchange="onYearChange()"></select>
 <select id="monthSelect" class="form-select form-select-sm fw-bold" style="min-width:110px; border-radius:0 10px 10px 0; border-left:0;" onchange="calculateNewRoster(true)"></select>
 </div>
-<button class="btn btn-sm btn-info btn-app-action" onclick="testConnection()"><i class="fa-solid fa-plug"></i> ทดสอบ</button>
+<button class="btn btn-sm btn-info btn-app-action" onclick="testConnection()"><i class="fa-solid fa-plug"></i> ทดสอบเชื่อมต่อ</button>
 <button class="btn btn-sm btn-warning btn-app-action" onclick="toggleNameEditor()"><i class="fa-solid fa-pen"></i> แก้ไขชื่อ</button>
 <button class="btn btn-sm btn-success btn-app-action" onclick="saveToGoogleSheet()" id="btnSave"><i class="fa-solid fa-cloud-arrow-up"></i> บันทึก</button>
 </div>
@@ -56,23 +57,20 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 <div class="container-fluid py-3 px-3">
 <div class="status-bar d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 <div class="d-flex align-items-center gap-3 flex-wrap">
-<i class="fa-solid fa-database text-primary"></i><span class="fw-bold small">ชีท:</span><span id="currentSheetName" class="badge bg-light text-dark border small">-</span><span id="lblSyncStatus" class="small text-muted">พร้อม</span><span id="lastSyncTime" class="small text-muted"></span>
+<i class="fa-solid fa-database text-primary"></i><span class="fw-bold small">ชีท:</span><span id="currentSheetName" class="badge bg-light text-dark border small">-</span><span id="lblSyncStatus" class="small text-muted">พร้อม</span><span id="lastSyncTime" class="small text-muted"></span><span id="apiUrlDisplay" class="small text-muted" style="font-size:0.65rem;"></span>
 </div>
 <button class="btn btn-sm btn-outline-secondary" onclick="toggleDebug()"><i class="fa-solid fa-bug"></i> Debug</button>
 </div>
 
 <div id="debugPanel" class="app-card p-3 mb-3" style="display:none;">
-<h6 class="fw-bold"><i class="fa-solid fa-bug me-2"></i>Debug - แก้ Failed to fetch</h6>
+<h6 class="fw-bold"><i class="fa-solid fa-bug me-2"></i>Debug - การเชื่อมต่อ Google Sheet</h6>
 <div id="debugContent" class="debug-box">ยังไม่ได้ทดสอบ...</div>
 <div class="mt-2 small">
-<b>ถ้าขึ้น Failed to fetch:</b><br>
-1. URL ใน Apps Script หมดอายุ - ต้อง Deploy ใหม่ → Copy URL ใหม่ → ใส่ในช่องล่างนี้แล้วกดบันทึก<br>
+<b>วิธีแก้ถ้าออฟไลน์:</b><br>
+1. ไปที่ script.google.com → เปิดโปรเจค → Deploy → Manage deployments → Copy Web app URL ใหม่ → เอามาใส่ในไฟล์ HTML บรรทัด GAS_API_URL<br>
 2. Deploy ต้องตั้ง: Execute as = Me, Who has access = Anyone<br>
-<div class="input-group input-group-sm mt-2">
-<span class="input-group-text">GAS URL</span>
-<input type="text" id="gasUrlInput" class="form-control" placeholder="วาง URL ใหม่จาก Apps Script ที่นี่">
-<button class="btn btn-sm btn-primary" onclick="saveNewUrl()">บันทึก URL</button>
-</div>
+3. ไปที่ Google Sheet → Share → เพิ่มอีเมลที่ Deploy ให้สิทธิ์ Editor<br>
+4. ลองกดปุ่ม "ทดสอบเชื่อมต่อ" จะบอกสาเหตุชัดเจน
 </div>
 </div>
 
@@ -115,10 +113,10 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg-color); }
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// ใช้ localStorage เก็บ URL ล่าสุดที่ใช้งานได้
-let GAS_API_URL = localStorage.getItem('GAS_API_URL_V37') || "https://script.google.com/macros/s/AKfycbwDjO_7Ih7AUM0J5AoFK4-oKBxHKS-yHj_1nQe78itJ_h9HEGNx8lHQDbf9uEQQ1-AKig/exec";
-const FETCH_TIMEOUT = 12000;
-var currentData = null; var originalSummary = null;
+// ⚠️ สำคัญ: ต้องเปลี่ยน URL นี้ทุกครั้งที่ Deploy ใหม่ใน Apps Script
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzNe-CDQUlD47WUS5GBP9YhWTaLrO2b5DUarJdU6_qV9fH8PHPPr97I60UCNZrhQeqtFg/exec";
+const FETCH_TIMEOUT = 15000;
+var currentData = null; var isManualMode = false; var originalSummary = null;
 var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
 var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
 var listAsst2 = ["ด.ต.หญิง ธมนวรรณ"].concat(listMainOfficers);
@@ -129,118 +127,64 @@ var FULL_NAME_MAP = JSON.parse(JSON.stringify(FULL_NAME_MAP_ORIGINAL));
 var SLEEP_PERSONS = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์", "ด.ต.หญิง ธมนวรรณ"];
 function getSleepAuto(a1,a2){ if(a2==="ด.ต.หญิง ธมนวรรณ") return a2; if(SLEEP_PERSONS.indexOf(a1)!==-1) return a1; if(SLEEP_PERSONS.indexOf(a2)!==-1) return a2; return a1; }
 const THAI_MONTHS = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+const LOCAL_CACHE_KEY = "roster_cache_V36";
 
 function toggleDebug(){ var el=document.getElementById('debugPanel'); el.style.display=el.style.display==='none'?'block':'none'; }
 function logDebug(msg){ var el=document.getElementById('debugContent'); var time=new Date().toLocaleTimeString('th-TH'); el.innerHTML+=`[${time}] ${msg}<br>`; el.scrollTop=el.scrollHeight; }
-function saveNewUrl(){
-  var newUrl=document.getElementById('gasUrlInput').value.trim();
-  if(!newUrl || !newUrl.includes('script.google.com')){
-    Swal.fire({icon:'warning', title:'URL ไม่ถูกต้อง', text:'ต้องเป็นลิงก์ script.google.com'}); return;
-  }
-  GAS_API_URL=newUrl;
-  localStorage.setItem('GAS_API_URL_V37', newUrl);
-  logDebug(`บันทึก URL ใหม่: ${newUrl}`);
-  Swal.fire({icon:'success', title:'บันทึก URL แล้ว', text:'กำลังทดสอบ...', timer:1500, showConfirmButton:false});
-  setTimeout(testConnection, 1000);
-}
-
-// JSONP fallback สำหรับแก้ Failed to fetch
-function fetchJSONP(url){
-  return new Promise((resolve, reject)=>{
-    var callbackName='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
-    var script=document.createElement('script');
-    var timeout=setTimeout(()=>{
-      delete window[callbackName];
-      document.body.removeChild(script);
-      reject(new Error('JSONP Timeout'));
-    }, 10000);
-    
-    window[callbackName]=function(data){
-      clearTimeout(timeout);
-      delete window[callbackName];
-      document.body.removeChild(script);
-      resolve(data);
-    };
-    
-    var sep=url.includes('?')?'&':'?';
-    script.src=url+sep+'callback='+callbackName;
-    script.onerror=function(){
-      clearTimeout(timeout);
-      delete window[callbackName];
-      document.body.removeChild(script);
-      reject(new Error('JSONP Load Error'));
-    };
-    document.body.appendChild(script);
-  });
-}
 
 async function testConnection(){
-  document.getElementById('debugPanel').style.display='block';
+  toggleDebug(); var debugEl=document.getElementById('debugPanel'); debugEl.style.display='block';
   document.getElementById('debugContent').innerHTML='';
-  document.getElementById('gasUrlInput').value=GAS_API_URL;
-  logDebug(`ทดสอบ: ${GAS_API_URL}`);
-  
-  // ลองแบบ fetch ปกติก่อน
+  logDebug(`กำลังทดสอบ: ${GAS_API_URL}`);
+  document.getElementById('apiUrlDisplay').innerText=GAS_API_URL.substring(0,60)+'...';
   try{
-    logDebug('1. ลอง fetch ปกติ...');
+    logDebug('1. ทดสอบ ping...');
     const res=await fetch(`${GAS_API_URL}?action=ping&_t=${Date.now()}`, {cache:'no-store'});
+    logDebug(`Status: ${res.status} ${res.statusText}`);
     const text=await res.text();
-    logDebug(`Fetch OK: ${text.substring(0,300)}`);
-    const data=JSON.parse(text);
-    if(data.success){
-      logDebug(`✅ สำเร็จ (fetch): ${data.sheetAccess}`);
-      Swal.fire({icon:'success', title:'เชื่อมต่อสำเร็จ'});
-      return;
+    logDebug(`Response: ${text.substring(0,500)}`);
+    try{
+      const data=JSON.parse(text);
+      if(data.success){
+        logDebug(`✅ เชื่อมต่อสำเร็จ: ${data.message}`);
+        logDebug(`Sheet: ${data.sheetAccess}`);
+        Swal.fire({icon:'success', title:'เชื่อมต่อสำเร็จ', text:`${data.message} - ${data.sheetAccess}`});
+      } else {
+        logDebug(`❌ Error: ${data.error}`);
+        Swal.fire({icon:'error', title:'เชื่อมต่อไม่สำเร็จ', text:data.error});
+      }
+    }catch(e){
+      logDebug(`❌ JSON Parse Error: อาจเป็นหน้า Login Google = Deploy ไม่ได้ตั้ง Anyone`);
+      logDebug(`Raw: ${text.substring(0,1000)}`);
     }
   }catch(e){
-    logDebug(`Fetch ล้มเหลว: ${e.message} -> ลอง JSONP`);
-  }
-  
-  // Fallback JSONP
-  try{
-    logDebug('2. ลอง JSONP (แก้ CORS)...');
-    const data=await fetchJSONP(`${GAS_API_URL}?action=ping&_t=${Date.now()}`);
-    logDebug(`JSONP OK: ${JSON.stringify(data).substring(0,300)}`);
-    if(data.success){
-      logDebug(`✅ สำเร็จ (JSONP): ${data.sheetAccess}`);
-      Swal.fire({icon:'success', title:'เชื่อมต่อสำเร็จด้วย JSONP', text:'ระบบจะใช้ JSONP แทน fetch เพื่อเลี่ยง CORS'});
-      return;
-    } else {
-      throw new Error(data.error||'Unknown');
-    }
-  }catch(e){
-    logDebug(`❌ JSONP ล้มเหลว: ${e.message}`);
-    logDebug('สาเหตุ: Deploy ไม่ได้ตั้ง Anyone หรือ URL หมดอายุ');
-    Swal.fire({icon:'error', title:'เชื่อมต่อไม่ได้', html:'Deploy หมดอายุ<br>1. ไป script.google.com<br>2. Deploy ใหม่ แบบ Anyone<br>3. Copy URL ใหม่มาใส่ในช่องด้านบน'});
+    logDebug(`❌ Fetch Error: ${e.message}`);
+    logDebug(`สาเหตุ: 1. URL ผิด 2. Deploy ไม่ได้ตั้ง Anyone 3. อินเตอร์เน็ต`);
+    Swal.fire({icon:'error', title:'เชื่อมต่อไม่ได้', text:e.message});
   }
 }
 
-const LOCAL_CACHE_KEY = "roster_cache_V37";
 function getLocalCache(y,m){ try{ var raw=localStorage.getItem(LOCAL_CACHE_KEY+"_"+y+"_"+m); if(!raw) return null; var obj=JSON.parse(raw); if(Date.now()-obj.ts>10*60*1000) return null; return obj.data; }catch(e){ return null; } }
 function setLocalCache(y,m,data){ try{ localStorage.setItem(LOCAL_CACHE_KEY+"_"+y+"_"+m, JSON.stringify({ts:Date.now(), data:data})); }catch(e){} }
-
-async function fetchWithRetry(url, opts={}, retries=1){
-  // ลอง fetch ก่อน
-  try{
-    const res=await fetch(url, {...opts, cache:'no-store'});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text=await res.text();
-    return JSON.parse(text);
-  }catch(e){
-    // ถ้า fetch พัง ลอง JSONP
-    console.warn('Fetch failed, trying JSONP', e);
-    return await fetchJSONP(url);
+async function fetchWithRetry(url, opts={}, retries=1, timeout=FETCH_TIMEOUT){
+  for(let i=0;i<=retries;i++){
+    try{
+      const ctrl=new AbortController(); const tid=setTimeout(()=>ctrl.abort(), timeout);
+      const res=await fetch(url, {...opts, signal:ctrl.signal, cache:'no-store'});
+      clearTimeout(tid);
+      if(!res.ok) throw new Error(`HTTP ${res.status} - ตรวจสอบ Deploy Anyone`);
+      return res;
+    }catch(e){ if(i===retries) throw e; await new Promise(r=>setTimeout(r, 600)); }
   }
 }
-
 function toggleNameEditor(){ var el=document.getElementById('nameEditor'); if(el.classList.contains('show')){ bootstrap.Collapse.getInstance(el).hide(); } else { new bootstrap.Collapse(el, {toggle:true}); initFullNameEditor(); } }
 function initFullNameEditor(){ var html=""; Object.keys(FULL_NAME_MAP).forEach(function(k){ var v=FULL_NAME_MAP[k]; html+=`<div class="col-md-6"><div class="input-group input-group-sm mb-1"><span class="input-group-text" style="min-width:135px; font-size:0.85rem;">${k}</span><input type="text" class="form-control" id="fn_${k}" value="${v}"></div></div>`; }); document.getElementById('fullnameEditorBody').innerHTML=html; }
-function saveFullNames(){ Object.keys(FULL_NAME_MAP).forEach(function(k){ var el=document.getElementById('fn_'+k); if(el) FULL_NAME_MAP[k]=el.value.trim(); }); localStorage.setItem('fullNameMap_V37', JSON.stringify(FULL_NAME_MAP)); Swal.fire({icon:'success', title:'บันทึกชื่อแล้ว', timer:1000, showConfirmButton:false}); }
-function resetFullNames(){ FULL_NAME_MAP=JSON.parse(JSON.stringify(FULL_NAME_MAP_ORIGINAL)); FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"]="จ.ส.ต. ปิติพงษ์ ชัยเพชร"; initFullNameEditor(); localStorage.removeItem('fullNameMap_V37'); }
+function saveFullNames(){ Object.keys(FULL_NAME_MAP).forEach(function(k){ var el=document.getElementById('fn_'+k); if(el) FULL_NAME_MAP[k]=el.value.trim(); }); localStorage.setItem('fullNameMap_V36', JSON.stringify(FULL_NAME_MAP)); Swal.fire({icon:'success', title:'บันทึกชื่อเรียบร้อย', timer:1000, showConfirmButton:false}); }
+function resetFullNames(){ FULL_NAME_MAP=JSON.parse(JSON.stringify(FULL_NAME_MAP_ORIGINAL)); FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"]="จ.ส.ต. ปิติพงษ์ ชัยเพชร"; initFullNameEditor(); localStorage.removeItem('fullNameMap_V36'); }
 function initYearMonth(){ const ys=document.getElementById('yearSelect'); const ms=document.getElementById('monthSelect'); ys.innerHTML=''; for(let y=2026;y<=2036;y++){ let o=document.createElement('option'); o.value=y; o.text=`พ.ศ. ${y+543}`; if(y===2026) o.selected=true; ys.appendChild(o); } ms.innerHTML=''; for(let m=1;m<=12;m++){ let o=document.createElement('option'); o.value=m; o.text=THAI_MONTHS[m]; ms.appendChild(o); } ms.value=10; updateSheetName(); }
-function updateSheetName(){ const y=document.getElementById('yearSelect').value; const m=document.getElementById('monthSelect').value; if(y&&m){ document.getElementById('currentSheetName').innerText=`${y}-${m}`; document.getElementById('tableSubTitle').innerText=`${y}-${m}`; } }
+function updateSheetName(){ const y=document.getElementById('yearSelect').value; const m=document.getElementById('monthSelect').value; if(y&&m){ document.getElementById('currentSheetName').innerText=`${y}-${m}`; document.getElementById('tableSubTitle').innerText=`${y}-${m}`; document.getElementById('apiUrlDisplay').innerText=GAS_API_URL.substring(0,50)+'...'; } }
 function onYearChange(){ updateSheetName(); calculateNewRoster(true); }
-window.onload=function(){ try{ var s=localStorage.getItem('fullNameMap_V37'); if(s){ var p=JSON.parse(s); Object.keys(p).forEach(k=>{ FULL_NAME_MAP[k]=p[k]; }); } }catch(e){} FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"]="จ.ส.ต. ปิติพงษ์ ชัยเพชร"; document.getElementById('gasUrlInput').value=GAS_API_URL; initYearMonth(); calculateNewRoster(true); };
+window.onload=function(){ try{ var s=localStorage.getItem('fullNameMap_V36'); if(s){ var p=JSON.parse(s); Object.keys(p).forEach(k=>{ FULL_NAME_MAP[k]=p[k]; }); } }catch(e){} FULL_NAME_MAP["จ.ส.ต.ปิติพงษ์"]="จ.ส.ต. ปิติพงษ์ ชัยเพชร"; initYearMonth(); calculateNewRoster(true); };
 function renderBadge(n){ var s=colorMap[n]||{bg:"#e0e0e0",text:"#000"}; return `<span class="badge-person" style="background:${s.bg};color:${s.text}">${n}</span>`; }
 
 async function calculateNewRoster(showPopup, forceRefresh=false){
@@ -249,7 +193,9 @@ async function calculateNewRoster(showPopup, forceRefresh=false){
   if(showPopup) Swal.fire({title:'กำลังโหลด', text:'กรุณารอสักครู่', allowOutsideClick:false, showConfirmButton:false, didOpen:()=>{Swal.showLoading();}});
   document.getElementById("lblSyncStatus").innerText="กำลังโหลด...";
   try{
-    let data=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {}, 1);
+    let res=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}&_t=${Date.now()}`, {}, 1, FETCH_TIMEOUT);
+    let text=await res.text(); let data;
+    try{ data=JSON.parse(text); }catch(e){ throw new Error(`ไม่ใช่ JSON - อาจเป็นหน้า Login Google = Deploy ไม่ได้ตั้ง Anyone | Response: ${text.substring(0,200)}`); }
     if(data.error) throw new Error(data.error);
     if(!data.isFromSheet){ data.roster=data.roster.map(r=>({...r, sleep:getSleepAuto(r.asst1,r.asst2)})); }
     currentData=data; setLocalCache(year,month,data);
@@ -262,7 +208,7 @@ async function calculateNewRoster(showPopup, forceRefresh=false){
     console.error(e);
     document.getElementById("onlineBadge").classList.add("d-none"); document.getElementById("offlineBadge").classList.remove("d-none");
     document.getElementById("lblSyncStatus").innerText="ออฟไลน์: "+e.message.substring(0,80);
-    document.getElementById('debugPanel').style.display='block'; logDebug(`❌ โหลดไม่สำเร็จ: ${e.message} - ลองกดทดสอบเชื่อมต่อ`);
+    if(document.getElementById('debugPanel').style.display==='none'){ document.getElementById('debugPanel').style.display='block'; logDebug(`❌ โหลดไม่สำเร็จ: ${e.message}`); }
     if(showPopup) Swal.close(); genLocal();
   }
 }
@@ -281,7 +227,7 @@ function recalc(rosterData,year,month){
   var wMap={}; listMainOfficers.forEach(n=>wMap[n]={mainCount:0,mainDates:[],asst2Count:0,asst2Dates:[]});
   rosterData.forEach(r=>{ if(r.dayName==="วันเสาร์"||r.dayName==="วันอาทิตย์"){ if(wMap[r.main]){ wMap[r.main].mainCount++; wMap[r.main].mainDates.push(parseInt(r.day)); } if(wMap[r.asst2]){ wMap[r.asst2].asst2Count++; wMap[r.asst2].asst2Dates.push(parseInt(r.day)); } } });
   var weekend={}; listMainOfficers.forEach(n=>{ wMap[n].mainDates.sort((a,b)=>a-b); wMap[n].asst2Dates.sort((a,b)=>a-b); weekend[n]={mainWeekendCount:wMap[n].mainCount,mainDates:wMap[n].mainDates,asst2WeekendCount:wMap[n].asst2Count,asst2Dates:wMap[n].asst2Dates}; });
-  currentData={year:year, month:month, totalDays:new Date(year,month,0).getDate(), roster:rosterData, summary:summary, weekendStats:weekend, allOfficers:all, mainOfficers:listMainOfficers};
+  currentData={year:year, month:month, totalDays:new Date(year,month,0).getDate(), roster:rosterData, summary:summary, weekendStats:weekend, allOfficers:all, mainOfficers:listMainOfficers, lockedFixes: currentData?currentData.lockedFixes:{}};
   originalSummary=JSON.parse(JSON.stringify(summary));
 }
 function renderAll(){
@@ -353,17 +299,16 @@ async function saveToGoogleSheet(){
   document.getElementById('btnSave').disabled=true; document.getElementById('btnSave').innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i> บันทึก...`;
   try{
     setLocalCache(currentData.year,currentData.month,currentData);
-    // ใช้ fetch POST แบบปกติ (Google Sheet ต้อง Anyone)
-    let r=await fetch(GAS_API_URL,{method:'POST', body:JSON.stringify({action:'saveRoster',finalData:currentData}), headers:{'Content-Type':'text/plain'}});
+    let r=await fetchWithRetry(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})}, 1, 15000);
     let text=await r.text(); let res;
-    try{ res=JSON.parse(text); }catch(e){ throw new Error(`Response ไม่ใช่ JSON: ${text.substring(0,200)}`); }
-    if(res.error || res.success===false) throw new Error(res.error||"Unknown");
+    try{ res=JSON.parse(text); }catch(e){ throw new Error(`บันทึกไม่สำเร็จ - Response ไม่ใช่ JSON: ${text.substring(0,300)} - ตรวจสอบ Deploy Anyone`); }
+    if(res.error || res.success===false) throw new Error(res.error||"Unknown error");
     document.getElementById("manualModeBadge").classList.add("d-none");
     Swal.fire({icon:'success', title:'บันทึกสำเร็จ', timer:1000, showConfirmButton:false});
   }catch(e){
     console.error(e);
-    Swal.fire({icon:'error', title:'บันทึกไม่สำเร็จ', html:`${e.message}<br><small>ลอง Deploy ใหม่แบบ Anyone แล้วทดสอบเชื่อมต่อ</small>`});
-    document.getElementById('debugPanel').style.display='block'; logDebug(`❌ Save: ${e.message}`);
+    Swal.fire({icon:'error', title:'บันทึกไม่สำเร็จ', html:`${e.message}<br><br><small>กดปุ่ม Debug ดูรายละเอียด</small>`});
+    document.getElementById('debugPanel').style.display='block'; logDebug(`❌ Save Error: ${e.message}`);
   }
   finally{ document.getElementById('btnSave').disabled=false; document.getElementById('btnSave').innerHTML=`<i class="fa-solid fa-cloud-arrow-up"></i> บันทึก`; }
 }
