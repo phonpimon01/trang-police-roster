@@ -3,46 +3,51 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>V9 Signature Fixed</title>
+<title>ระบบจัดตารางเวร พฐ.จว.ตรัง V12 Perfect</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body { font-family: 'Sarabun', sans-serif; background: #f0f4f8; }
-.app-navbar { background: linear-gradient(135deg, #1c4587 0%, #120b2e 100%); color: white; padding: 12px 20px; position: sticky; top: 0; z-index: 1050; }
+:root { --app-primary: #1c4587; --app-dark: #120b2e; --bg-color: #f0f4f8; }
+body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; background: var(--bg-color); }
+.app-navbar { background: linear-gradient(135deg, var(--app-primary) 0%, var(--app-dark) 100%); color: white; padding: 12px 20px; position: sticky; top: 0; z-index: 1050; }
 .app-card { background: #fff; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); margin-bottom: 20px; }
 .table-container-app { max-height: 65vh; overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
-.table-app th { background: #120b2e; color: white; text-align: center; position: sticky; top: 0; }
+.table-app th { background: var(--app-dark); color: white; text-align: center; position: sticky; top: 0; }
 .table-app td { text-align: center; padding: 8px; }
 .select-name { border-radius: 20px; padding: 4px 12px; font-weight: 600; font-size: 0.85rem; }
 .badge-person { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.84rem; display: inline-block; }
 .btn-app-action { border-radius: 10px; font-weight: 600; padding: 8px 16px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
 .status-toast { position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 12px; padding: 12px 20px; color: white; font-weight: 600; }
-.manual-badge { background: #ff9800; color: #000; font-weight: 700; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%{opacity:1} 50%{opacity:0.6} 100%{opacity:1} }
+.manual-badge { background: #ff9800; color: #000; font-weight: 700; }
+.offline-badge { background: #6c757d; color: white; }
+.error-box { background: #fff3cd; border-left: 4px solid #ff9800; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 0.85rem; }
 </style>
 </head>
 <body>
 <nav class="app-navbar d-flex justify-content-between align-items-center flex-wrap gap-2">
-<div style="font-weight:700; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-shield-halved text-warning"></i> V9 ยศหน้าเส้นประ <span id="manualModeBadge" class="badge manual-badge d-none ms-2">โหมดแก้ไขเอง</span></div>
+<div style="font-weight:700; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-shield-halved text-warning"></i> V12 Perfect A4 <span id="manualModeBadge" class="badge manual-badge d-none ms-2">โหมดแก้ไขเอง</span> <span id="offlineBadge" class="badge offline-badge d-none ms-2">ออฟไลน์</span></div>
 <div class="d-flex align-items-center gap-2 flex-wrap">
-<select id="monthSelect" class="form-select form-select-sm fw-bold" style="width:auto;" onchange="calculateNewRoster()">
+<select id="monthSelect" class="form-select form-select-sm fw-bold" style="width:auto;">
 <option value="9">กันยายน 2026</option><option value="10" selected>ตุลาคม 2026</option><option value="11">พฤศจิกายน 2026</option><option value="12">ธันวาคม 2026</option>
 </select>
-<button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster()">รีเฟรช</button>
-<button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="generateNewRosterConfirm()">จัดใหม่</button>
+<button class="btn btn-sm btn-light text-primary btn-app-action" onclick="calculateNewRoster(true)">รีเฟรช</button>
+<button class="btn btn-sm btn-warning text-dark fw-bold btn-app-action" onclick="generateLocalRoster()">จัดใหม่</button>
 <button class="btn btn-sm btn-danger btn-app-action" onclick="exportDailyPDF()">ส่งออก PDF รายวัน</button>
 <button class="btn btn-sm btn-success btn-app-action" onclick="saveToGoogleSheet()">บันทึก</button>
 </div>
 </nav>
 
 <div class="container-fluid py-3 px-3">
+<div id="errorBox" class="error-box d-none"><b>เชื่อมต่อ Sheet ไม่ได้</b> <span id="errorText"></span> - โหมดออฟไลน์</div>
 <div class="app-card p-3 border-start border-4 border-primary mb-3">
 <p class="mb-0 small text-muted" id="lblSyncStatus">กำลังเชื่อมโยง...</p>
+<p class="mb-0 small text-muted" id="lblRecommendation"></p>
+<div class="mt-2 small"><span class="badge bg-primary">ชุดที่ 1 ผู้ช่วย (8 คน)</span> พ.ต.ท.หญิง พัชรี, อลิษา, พัชราภรณ์, กิตติศักดิ์, พรพิมล, นัสรอน, รณชัช, ธมนวรรณ | <span class="badge bg-info text-dark">ชุดที่ 2 ผู้ช่วย (3 คน)</span> พรณรงค์, สุริยา, ปิติพงษ์</div>
 </div>
 <div class="row g-3">
 <div class="col-xl-7"><div class="app-card p-3"><h5 class="fw-bold text-primary mb-3">ตารางปฏิบัติหน้าที่</h5><div class="table-container-app"><table class="table table-bordered table-hover table-app"><thead><tr><th>วันที่</th><th>วัน</th><th>ร้อยเวรหลัก</th><th>ผู้ช่วย 1</th><th>ผู้ช่วย 2</th><th>เวรนอน</th></tr></thead><tbody id="dutyBody"></tbody></table></div></div></div>
-<div class="col-xl-5"><div class="app-card p-3"><h6 class="fw-bold text-primary mb-2">สรุปภาระงาน</h6><div class="table-responsive" style="max-height:300px; overflow-y:auto;"><table class="table table-striped table-bordered table-app mb-0"><thead class="table-dark"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th><th>เวรนอน</th><th>รวม</th></tr></thead><tbody id="summaryBody"></tbody></table></div></div></div>
+<div class="col-xl-5"><div class="app-card p-3"><h6 class="fw-bold text-primary mb-2">สรุปภาระงาน</h6><div class="table-responsive" style="max-height:320px; overflow-y:auto;"><table class="table table-striped table-bordered table-app mb-0"><thead class="table-dark"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย</th><th>เวรนอน</th><th>รวม</th></tr></thead><tbody id="summaryBody"></tbody></table></div></div><div class="app-card p-3 mt-3"><h6 class="fw-bold text-success mb-2">สถิติเวรเสาร์-อาทิตย์</h6><div class="table-responsive" style="max-height:260px; overflow-y:auto;"><table class="table table-sm table-bordered table-app mb-0"><thead class="table-success text-center"><tr><th>รายชื่อ</th><th>เวรหลัก</th><th>ผู้ช่วย 2</th></tr></thead><tbody id="weekendStatsBody"></tbody></table></div></div></div>
 </div>
 </div>
 
@@ -50,9 +55,10 @@ body { font-family: 'Sarabun', sans-serif; background: #f0f4f8; }
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbytgfbaxtHeS5uPWAwzjHVCjIukBNFAyTFqSwolW5ibIRcXJUmm8gIw9PWKipN4E9swTA/exec";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxcpSBhgx5HHQiwpt_pVKmfipCBWHM5P8DurgXcjn3ISQPGfsiEbtdxcPQ_fKwFCcoy-g/exec";
 var currentData = null;
 var isManualMode = false;
+var isOfflineMode = false;
 var listMainOfficers = ["พ.ต.ท.หญิง พัชรี", "พ.ต.ท.หญิง อลิษา", "พ.ต.ต.หญิง พัชราภรณ์", "ร.ต.ท.กิตติศักดิ์", "พ.ต.ต.พรพิมล", "ร.ต.อ.นัสรอน", "ร.ต.ท.รณชัช"];
 var listAsst1 = ["ร.ต.ต.พรณรงค์", "ว่าที่ ร.ต.ต.สุริยา", "จ.ส.ต.ปิติพงษ์"];
 var listAsst2 = ["ด.ต.หญิง ธมนวรรณ"].concat(listMainOfficers);
@@ -77,43 +83,134 @@ function getRankOnly(fullName){
   return fullName.split(" ")[0];
 }
 window.onload = function(){ calculateNewRoster(); };
-function showToast(msg, isError){ var t=document.getElementById("toastAlert"); document.getElementById("toastMessage").innerText=msg; t.className="status-toast "+(isError?"bg-danger":"bg-success"); t.classList.remove("d-none"); setTimeout(()=>t.classList.add("d-none"),3000); }
+function showToast(msg, isError){ var t=document.getElementById("toastAlert"); document.getElementById("toastMessage").innerText=msg; t.className="status-toast "+(isError?"bg-danger":"bg-success"); t.classList.remove("d-none"); setTimeout(()=>t.classList.add("d-none"),4000); }
 function renderBadge(name){ var s=colorMap[name]||{bg:"#e0e0e0",text:"#000"}; return `<span class="badge-person" style="background:${s.bg};color:${s.text}">${name}</span>`; }
-async function calculateNewRoster(){
+
+async function calculateNewRoster(showLoading){
   var month=parseInt(document.getElementById("monthSelect").value);
+  var year=2026;
+  if(showLoading) document.getElementById("lblSyncStatus").innerHTML="<b class='text-warning'>กำลังเชื่อมโยง...</b>";
   try{
-    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=2026&month=${month}`);
+    let controller = new AbortController();
+    let timeoutId = setTimeout(()=>controller.abort(), 7000);
+    let res=await fetch(`${GAS_API_URL}?action=getRoster&year=${year}&month=${month}`, {signal: controller.signal});
+    clearTimeout(timeoutId);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
     let data=await res.json();
-    currentData=data; isManualMode=false; document.getElementById("manualModeBadge").classList.add("d-none");
+    if(data.error) throw new Error(data.error);
+    currentData=data; isManualMode=false; isOfflineMode=false;
+    document.getElementById("manualModeBadge").classList.add("d-none");
+    document.getElementById("offlineBadge").classList.add("d-none");
+    document.getElementById("errorBox").classList.add("d-none");
     if(!currentData.lockedFixes) currentData.lockedFixes={};
-    renderWebPage(); 
-    document.getElementById("lblSyncStatus").innerHTML=data.isFromSheet?"<b class='text-success'>เชื่อมโยงสมบูรณ์</b>":"<b class='text-primary'>ข้อมูลใหม่ยังไม่ได้บันทึก</b>";
-  }catch(e){ alert("โหลดไม่ได้: "+e); }
+    renderWebPage();
+    document.getElementById("lblSyncStatus").innerHTML=data.isFromSheet?"<b class='text-success'>เชื่อมโยงสมบูรณ์กับ Sheet</b>":"<b class='text-primary'>ข้อมูลใหม่ยังไม่ได้บันทึก</b>";
+    if(data.prevContext){
+      document.getElementById("lblLastOfficer").innerText=data.prevContext.lastOfficer||"-";
+      document.getElementById("lblLastAsst1").innerText=data.prevContext.lastAsst1||"-";
+      document.getElementById("lblRecommendation").innerText=data.prevContext.recommendation||"";
+    }
+    showToast("โหลดสำเร็จ");
+  }catch(e){
+    document.getElementById("errorBox").classList.remove("d-none");
+    document.getElementById("errorText").innerText = e.message;
+    document.getElementById("offlineBadge").classList.remove("d-none");
+    generateLocalRoster();
+    showToast("โหมดออฟไลน์", true);
+  }
 }
-async function generateNewRosterConfirm(){ if(!confirm("ล้างและจัดใหม่ทั้งหมด?")) return; var month=parseInt(document.getElementById("monthSelect").value); let r=await fetch(`${GAS_API_URL}?action=generateNewRoster&year=2026&month=${month}`); let d=await r.json(); currentData=d; isManualMode=false; document.getElementById("manualModeBadge").classList.add("d-none"); currentData.lockedFixes={}; renderWebPage(); showToast("จัดใหม่เรียบร้อย"); }
+function generateLocalRoster(){
+  var month=parseInt(document.getElementById("monthSelect").value);
+  var year=2026;
+  var totalDays = new Date(year, month, 0).getDate();
+  var dayNamesTH = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+  var rosterData = [];
+  var thamonwanDays = []; var cur = 1; var use3 = false;
+  while(cur <= totalDays && thamonwanDays.length < 10){ thamonwanDays.push(cur); cur += use3? 4 : 3; use3 = !use3; }
+  for(var d=1; d<=totalDays; d++){
+    var dt = new Date(year, month-1, d);
+    var isWeekend = dt.getDay()===0 || dt.getDay()===6;
+    var mainIdx = (d-1) % listMainOfficers.length;
+    var selectedMain = listMainOfficers[mainIdx];
+    if(isWeekend && ["พ.ต.ท.หญิง พัชรี", "พ.ต.ต.พรพิมล"].includes(selectedMain)){
+      selectedMain = listMainOfficers[(mainIdx+2) % listMainOfficers.length];
+    }
+    var selectedAsst1 = listAsst1[Math.floor((d-1)/2) % listAsst1.length];
+    var selectedAsst2 = thamonwanDays.includes(d) ? "ด.ต.หญิง ธมนวรรณ" : listMainOfficers[(d) % listMainOfficers.length];
+    var selectedSleep = thamonwanDays.includes(d) ? "ด.ต.หญิง ธมนวรรณ" : selectedAsst1;
+    rosterData.push({ day: d, dayName: dayNamesTH[dt.getDay()], main: selectedMain, asst1: selectedAsst1, asst2: selectedAsst2, sleep: selectedSleep });
+  }
+  recalculateAllStats(rosterData, year, month);
+  isManualMode = false;
+  isOfflineMode = true;
+  document.getElementById("manualModeBadge").classList.add("d-none");
+  document.getElementById("lblSyncStatus").innerHTML="<b class='text-warning'>โหมดออฟไลน์</b>";
+  renderWebPage();
+}
+function recalculateAllStats(rosterData, year, month){
+  var allOfficers = listMainOfficers.concat(listAsst1, "ด.ต.หญิง ธมนวรรณ");
+  var map={}; allOfficers.forEach(n=>map[n]={main:0,asst:0,sleep:0});
+  rosterData.forEach(r=>{ if(map[r.main]!=null) map[r.main].main++; if(map[r.asst1]!=null) map[r.asst1].asst++; if(map[r.asst2]!=null) map[r.asst2].asst++; if(map[r.sleep]!=null) map[r.sleep].sleep++; });
+  var summary=[]; allOfficers.forEach(n=>{ var it=map[n]; summary.push({name:n,main:it.main,asst:it.asst,sleep:it.sleep,total:it.main+it.asst+it.sleep}); });
+  var wMap={}; listMainOfficers.forEach(n=>wMap[n]={mainCount:0,mainDates:[],asst2Count:0,asst2Dates:[]});
+  rosterData.forEach(r=>{ if(r.dayName==="วันเสาร์"||r.dayName==="วันอาทิตย์"){ if(wMap[r.main]){ wMap[r.main].mainCount++; wMap[r.main].mainDates.push(r.day); } if(wMap[r.asst2]){ wMap[r.asst2].asst2Count++; wMap[r.asst2].asst2Dates.push(r.day); } } });
+  var weekendStats={}; listMainOfficers.forEach(n=>{ weekendStats[n]={mainWeekendCount:wMap[n].mainCount,mainDates:wMap[n].mainDates,asst2WeekendCount:wMap[n].asst2Count,asst2Dates:wMap[n].asst2Dates}; });
+  var totalDays = new Date(year, month, 0).getDate();
+  var weekendList=[];
+  currentData = { year: year, month: month, totalDays: totalDays, roster: rosterData, summary: summary, weekendList: weekendList, weekendStats: weekendStats, prevContext: {lastOfficer:"", lastAsst1:"", recommendation:"โหมดออฟไลน์"}, allOfficers: allOfficers, mainOfficers: listMainOfficers, isFromSheet: false, lastModified: Date.now(), lockedFixes: currentData? currentData.lockedFixes : {} };
+}
 function renderWebPage(){
   if(!currentData) return;
   var dHtml=""; currentData.roster.forEach((row, idx)=>{
     dHtml+=`<tr><td><b>${row.day}</b></td><td>${row.dayName}</td><td>${createDropdown(idx,'main',row.main,listMainOfficers)}</td><td>${createDropdown(idx,'asst1',row.asst1,listAsst1)}</td><td>${createDropdown(idx,'asst2',row.asst2,listAsst2)}</td><td>${createDropdown(idx,'sleep',row.sleep,listSleep)}</td></tr>`;
-  }); document.getElementById("dutyBody").innerHTML=dHtml; renderSummaryTable();
+  });
+  document.getElementById("dutyBody").innerHTML=dHtml;
+  renderSummaryTable();
+  renderWeekendStatsTable();
 }
 function createDropdown(ri, ct, sel, list){ var st=colorMap[sel]||{bg:"#fff",text:"#000"}; var h=`<select class="form-select select-name" style="background:${st.bg};color:${st.text}" onchange="updateDutyPerson(${ri},'${ct}',this.value,this)">`; list.forEach(n=>{ h+=`<option value="${n}" ${n===sel?"selected":""}>${n}</option>`; }); h+=`</select>`; return h; }
 function updateDutyPerson(ri, ct, newName, el){
-  isManualMode=true; document.getElementById("manualModeBadge").classList.remove("d-none"); if(!currentData.lockedFixes) currentData.lockedFixes={};
-  currentData.roster[ri][ct]=newName; if(ct==='main') currentData.lockedFixes["fixed_main_"+currentData.roster[ri].day]=newName;
-  var st=colorMap[newName]||{bg:"#fff",text:"#000"}; el.style.backgroundColor=st.bg; el.style.color=st.text;
+  isManualMode=true;
+  document.getElementById("manualModeBadge").classList.remove("d-none");
+  if(!currentData.lockedFixes) currentData.lockedFixes={};
+  currentData.roster[ri][ct]=newName;
+  if(ct==='main') currentData.lockedFixes["fixed_main_"+currentData.roster[ri].day]=newName;
+  var st=colorMap[newName]||{bg:"#fff",text:"#000"};
+  el.style.backgroundColor=st.bg; el.style.color=st.text;
+  recalculateAllStats(currentData.roster, currentData.year, currentData.month);
   renderSummaryTable();
+  renderWeekendStatsTable();
 }
 function renderSummaryTable(){ var h=""; currentData.summary.forEach(s=>{ h+=`<tr><td>${renderBadge(s.name)}</td><td>${s.main} วัน</td><td>${s.asst} วัน</td><td>${s.sleep} วัน</td><td><b class="text-primary">${s.total} วัน</b></td></tr>`; }); document.getElementById("summaryBody").innerHTML=h; }
-async function saveToGoogleSheet(){ if(!currentData) return; try{ let r=await fetch(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})}); let res=await r.json(); isManualMode=false; document.getElementById("manualModeBadge").classList.add("d-none"); currentData.lockedFixes={}; showToast(res.message); }catch(e){ alert("บันทึกไม่ได้: "+e); } }
+function renderWeekendStatsTable(){ var html=""; listMainOfficers.forEach(name=>{ var st=currentData.weekendStats[name]||{mainWeekendCount:0,mainDates:[],asst2WeekendCount:0,asst2Dates:[]}; html+=`<tr><td>${renderBadge(name)}</td><td class="text-center"><b class="text-success">${st.mainWeekendCount} วัน</b><br><small>${st.mainDates.join(", ")||"-"}</small></td><td class="text-center"><b class="text-primary">${st.asst2WeekendCount} วัน</b><br><small>${st.asst2Dates.join(", ")||"-"}</small></td></tr>`; }); document.getElementById("weekendStatsBody").innerHTML=html; }
+async function saveToGoogleSheet(){ if(isOfflineMode){ alert("โหมดออฟไลน์บันทึกไม่ได้"); return; } if(!currentData) return; try{ let r=await fetch(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})}); let res=await r.json(); isManualMode=false; document.getElementById("manualModeBadge").classList.add("d-none"); currentData.lockedFixes={}; showToast(res.message||"บันทึกสำเร็จ"); }catch(e){ showToast("บันทึกไม่ได้: "+e.message, true); } }
 
+// ==================== PDF EXPORT V12 - FIXED 5 POINTS ====================
 const THAI_MONTHS = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 const THAI_DIGITS = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
 function toThaiDigits(s){ return s.toString().split('').map(c=>{ let n=parseInt(c); return isNaN(n)?c:THAI_DIGITS[n]; }).join(''); }
 function formatThaiDate(day, month, year){ return `${toThaiDigits(day)} ${THAI_MONTHS[month]} ${toThaiDigits(year+543)}`; }
+
+// แก้ให้มีช่องว่างระหว่างยศกับชื่อ
 function expandRank(fullName){
-  let map = {"ร.ต.ต.พรณรงค์": "ว่าที่ ร.ต.ต.พรณรงค์ คงนคร","ว่าที่ ร.ต.ต.สุริยา": "ด.ต.สุริยา หมั่นทวี","จ.ส.ต.ปิติพงษ์": "ด.ต.วัยทิพย์ ตั้นฉ้วน","ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร","พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์","พ.ต.ต.พรพิมล": "ว่าที่ พ.ต.ต.พรพิมล คงชัย"};
-  return map[fullName] || fullName;
+  let map = {
+    "ร.ต.ต.พรณรงค์": "ร.ต.ต. พรณรงค์ คงนคร",
+    "ว่าที่ ร.ต.ต.สุริยา": "ว่าที่ ร.ต.ต. สุริยา หมั่นทวี",
+    "จ.ส.ต.ปิติพงษ์": "จ.ส.ต. ปิติพงษ์ ตั้นฉ้วน",
+    "ด.ต.หญิง ธมนวรรณ": "ด.ต.หญิง ธมนวรรณ ศรีเพ็ชร",
+    "พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์",
+    "พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา ศรีธัญรัตน์",
+    "พ.ต.ต.หญิง พัชราภรณ์": "พ.ต.ต.หญิง พัชราภรณ์ สุข",
+    "ร.ต.ท.กิตติศักดิ์": "ร.ต.ท. กิตติศักดิ์",
+    "พ.ต.ต.พรพิมล": "ว่าที่ พ.ต.ต. พรพิมล คงชัย",
+    "ร.ต.อ.นัสรอน": "ร.ต.อ. นัสรอน",
+    "ร.ต.ท.รณชัช": "ร.ต.ท. รณชัช"
+  };
+  return map[fullName] || fullName.replace(/^([^\s]+)([^\s])/, (m,p1,p2)=>{ 
+    // เพิ่มช่องว่างหลังยศถ้าไม่มี
+    if(fullName.includes(" ")) return fullName;
+    return fullName; 
+  }) || fullName;
 }
 
 function exportDailyPDF(){
@@ -122,28 +219,41 @@ function exportDailyPDF(){
   let html = `<html><head><meta charset="utf-8">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      @page { size: A4; margin: 15mm 18mm 12mm 18mm; }
-      body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 16pt; line-height: 1.35; color: #000; margin:0; }
-      .page { width: 210mm; height: 297mm; margin: 0 auto; padding: 12mm 18mm 10mm 18mm; box-sizing: border-box; page-break-after: always; position: relative; display: flex; flex-direction: column; }
+      @page { size: A4; margin: 10mm; }
+      body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 17pt; line-height: 1.35; color: #000; margin:0; }
+      /* 2. กรอบนอก - เอากลับมา */
+      .page { 
+        width: 210mm; 
+        height: 297mm; 
+        margin: 0 auto; 
+        padding: 10mm 14mm 8mm 14mm; 
+        box-sizing: border-box; 
+        page-break-after: always; 
+        position: relative; 
+        display: flex; 
+        flex-direction: column; 
+        border: 2.5px solid #000; /* กรอบนอก */
+      }
       .page:last-child { page-break-after: avoid; }
       .content { flex: 1; }
-      .header { text-align: center; font-size: 18pt; font-weight: bold; margin-bottom: 8pt; }
-      .subheader { font-size: 15pt; }
-      .field { margin-top: 6pt; font-size: 15pt; }
-      .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 160px; padding: 0 5px; }
-      .dotted-long { min-width: 260px; }
-      .dotted-date { min-width: 190px; }
-      .dotted-time { min-width: 70px; }
-      .team { margin-top: 12pt; }
-      .team-title { font-weight: bold; font-size: 15pt; margin-bottom: 4pt; }
-      .team-list { margin-left: 20pt; line-height: 1.8; font-size: 15pt; }
-      .role-tag { font-size: 11pt; color: #444; margin-left: 8pt; }
-      .report { margin-top: 12pt; font-size: 14.5pt; line-height: 1.5; }
-      .report ol { margin: 4pt 0 4pt 18pt; padding: 0; }
-      .signature { margin-top: 18pt; font-size: 15pt; line-height: 2.3; }
-      .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 300px; margin: 0 8px; }
-      .footer { text-align: center; font-size: 9.5pt; border-top: 1px dashed #999; padding-top: 4pt; margin-top: auto; }
-      .single-line { border-bottom: 1px dotted #000; display: inline-block; width: 140px; margin: 0 4px; }
+      .header { text-align: center; font-size: 20pt; font-weight: bold; margin-bottom: 6pt; }
+      .subheader { font-size: 16pt; }
+      .field { margin-top: 5pt; font-size: 16pt; }
+      .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 140px; padding: 0 4px; }
+      .dotted-long { min-width: 240px; }
+      .dotted-date { min-width: 170px; }
+      .dotted-time { min-width: 60px; }
+      /* 1. วันที่และเวลาอยู่ติดกัน */
+      .date-time-line { margin-top: 5pt; font-size: 16pt; white-space: nowrap; }
+      .team { margin-top: 10pt; }
+      .team-title { font-weight: bold; font-size: 16pt; margin-bottom: 3pt; }
+      .team-list { margin-left: 18pt; line-height: 1.75; font-size: 16pt; }
+      .report { margin-top: 10pt; font-size: 15pt; line-height: 1.45; }
+      .report ol { margin: 3pt 0 3pt 16pt; padding: 0; }
+      .report li { margin-bottom: 1pt; }
+      .signature { margin-top: 14pt; font-size: 15pt; line-height: 2.2; }
+      .sig-line { display: inline-block; border-bottom: 1px dotted #000; width: 320px; margin: 0 6px; }
+      .footer { text-align: center; font-size: 9pt; border-top: 1px dashed #999; padding-top: 3pt; margin-top: auto; }
     </style></head><body>`;
 
   currentData.roster.forEach((row, idx)=>{
@@ -164,7 +274,7 @@ function exportDailyPDF(){
     let team2_p3 = set2Candidates[0];
     if(!team2_p2){ let fb = assistantSet1.filter(n => !excludedForP2.has(n)); fb.sort((a,b)=>(rankScore[b]||0)-(rankScore[a]||0)); team2_p2 = fb[0] || assistantSet1[0]; }
     if(!team2_p3){ let fb2 = assistantSet2.filter(n => n !== team2_p2 && !team1Set.has(n)); team2_p3 = fb2[0] || assistantSet2[0]; }
-    let team2 = [team2_p1, team2_p2, team2_p3];
+
     let rankOnly1 = getRankOnly(row.main);
     let rankOnly2 = getRankOnly(team2_p1);
 
@@ -174,26 +284,28 @@ function exportDailyPDF(){
           <div class="header">การรายงานความพร้อมด้านการตรวจสถานที่เกิดเหตุ</div>
           <div class="subheader">แบบการตรวจจำนวนและความพร้อมของเจ้าหน้าที่ตรวจสถานที่เกิดเหตุ</div>
           <div class="field">หน่วยงาน <span class="dotted dotted-long">พิสูจน์หลักฐานจังหวัดตรัง</span></div>
-          <div class="field" style="display:flex; justify-content:space-between;">
-            <span>ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span></span>
-            <span>เวลา <span class="dotted dotted-time">${toThaiDigits("08.00")}</span> น.</span>
-          </div>
+          <!-- 1. วันที่และเวลาอยู่ติดกันเลย ไม่เว้นห่างมาก -->
+          <div class="date-time-line">ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span> เวลา <span class="dotted dotted-time">${toThaiDigits("๐๘.๐๐")}</span> น.</div>
+
           <div class="team">
             <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div>
             <div class="team-list">
-              ${toThaiDigits(1)} <span class="dotted dotted-long">${expandRank(team1[0])}</span><br>
-              ${toThaiDigits(2)} <span class="dotted dotted-long">${expandRank(team1[1])}</span><br>
-              ${toThaiDigits(3)} <span class="dotted dotted-long">${expandRank(team1[2])}</span>
+              <!-- 3. ไม่มี (ร้อยเวร) / (ผู้ช่วย) แล้ว -->
+              ${toThaiDigits(1)}. ${expandRank(team1[0])}<br>
+              ${toThaiDigits(2)}. ${expandRank(team1[1])}<br>
+              ${toThaiDigits(3)}. ${expandRank(team1[2])}
             </div>
           </div>
+
           <div class="team">
             <div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})</div>
             <div class="team-list">
-              ${toThaiDigits(1)} <span class="dotted dotted-long">${expandRank(team2[0])}</span> <span class="role-tag">(ร้อยเวร)</span><br>
-              ${toThaiDigits(2)} <span class="dotted dotted-long">${expandRank(team2[1])}</span> <span class="role-tag">(ผู้ช่วย ๑)</span><br>
-              ${toThaiDigits(3)} <span class="dotted dotted-long">${expandRank(team2[2])}</span> <span class="role-tag">(ผู้ช่วย ๒)</span>
+              ${toThaiDigits(1)}. ${expandRank(team2_p1)}<br>
+              ${toThaiDigits(2)}. ${expandRank(team2_p2)}<br>
+              ${toThaiDigits(3)}. ${expandRank(team2_p3)}
             </div>
           </div>
+
           <div class="report">
             <div>ข้าพเจ้า <span class="dotted">${expandRank(row.main)}</span> ปฏิบัติหน้าที่เวรตรวจสถานที่เกิดเหตุ ขอรายงาน ดังนี้</div>
             <ol>
@@ -201,18 +313,21 @@ function exportDailyPDF(){
               <li>ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ</li>
               <li>ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-๑๙ เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น</li>
             </ol>
-            <div style="margin-left:16pt;">
-              ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่ <span class="single-line"></span> การตรวจสถานที่เกิดเหตุ
+            <div style="margin-left:14pt;">
+              <!-- 4. ลบเส้นประออก ติดกันเลย -->
+              ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ
             </div>
-            <div style="margin-top:10pt;">จึงเรียนมาเพื่อโปรดทราบ</div>
+            <div style="margin-top:8pt;">จึงเรียนมาเพื่อโปรดทราบ</div>
           </div>
+
           <div class="signature">
+            <!-- 5. เลขไทยหมด + ฟอนต์ใหญ่ 17pt + ยศหน้าเส้น -->
             ลงชื่อ ${rankOnly1} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})<br>
             ลงชื่อ ${rankOnly2} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})<br>
             ลงชื่อ พ.ต.อ. <span class="sig-line"></span> ผู้ควบคุมชุดปฏิบัติการ
           </div>
         </div>
-        <div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${row.day}/${month}/${year} (${row.dayName})</div>
+        <div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(month)}/${toThaiDigits(year)} (${row.dayName})</div>
       </div>`;
   });
   html += `</body></html>`;
@@ -220,7 +335,7 @@ function exportDailyPDF(){
   w.document.write(html);
   w.document.close();
   setTimeout(()=>{ w.focus(); w.print(); }, 800);
-  showToast(`สร้าง PDF ${currentData.roster.length} หน้า - ยศหน้าเส้นประ`);
+  showToast(`สร้าง PDF ${toThaiDigits(currentData.roster.length)} หน้า - แบบฟอร์มสมบูรณ์`);
 }
 </script>
 </body>
