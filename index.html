@@ -69,7 +69,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg-color);color:#1e293b;}
 </nav>
 
 <div class="container-fluid py-3 px-3">
-<!-- Status Bar -->
 <div class="status-bar d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
 <div class="d-flex align-items-center gap-3 flex-wrap">
 <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-database text-primary"></i><span class="fw-bold small">Google Sheet:</span><span id="lblSyncStatus" class="small text-muted">กำลังเชื่อมต่อ...</span></div>
@@ -83,12 +82,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg-color);color:#1e293b;}
 </div>
 </div>
 
-<!-- Name Editor -->
 <div id="nameEditor" class="collapse mb-3"><div class="fullname-editor"><div class="d-flex justify-content-between align-items-center mb-3"><h6 class="fw-bold mb-0"><i class="fa-solid fa-users me-2 text-warning"></i>แก้ไขชื่อ-นามสกุล (จำค่าไว้ในเครื่อง)</h6><button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#nameEditor"><i class="fa-solid fa-xmark"></i></button></div><div class="row g-2" id="fullnameEditorBody"></div><div class="mt-3 d-flex gap-2"><button class="btn btn-sm btn-primary" onclick="saveFullNames()"><i class="fa-solid fa-save me-1"></i> บันทึกชื่อ-สกุล</button><small class="text-muted align-self-center">ชื่อจะถูกนำไปใช้ใน PDF อัตโนมัติ</small></div></div></div>
 
-<!-- Main Row -->
 <div class="row g-3">
-<!-- ตารางเวร -->
 <div class="col-xl-7">
 <div class="app-card p-3">
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -102,7 +98,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg-color);color:#1e293b;}
 </div>
 </div>
 
-<!-- สรุปภาระงาน -->
 <div class="col-xl-5">
 <div class="app-card p-3">
 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -133,7 +128,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg-color);color:#1e293b;}
 </div>
 </div>
 
-<!-- สถิติเสาร์-อาทิตย์ -->
 <div class="row g-3 mt-2">
 <div class="col-12">
 <div class="app-card p-3 weekend-card">
@@ -157,20 +151,22 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg-color);color:#1e293b;}
 
 </div>
 
-<!-- Help Modal -->
 <div class="modal fade" id="helpModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;"><div class="modal-header" style="background:linear-gradient(135deg,#1c4587,#120b2e); color:white; border-radius:16px 16px 0 0;"><h5 class="modal-title"><i class="fa-solid fa-book me-2"></i>วิธีใช้งาน ULTIMATE V30</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" style="font-size:0.9rem; line-height:1.7;">
 <h6 class="fw-bold text-primary"><i class="fa-solid fa-1 me-2"></i>การแก้ไขเวรนอน</h6>
 <ul><li>ในตารางตารางปฏิบัติหน้าที่ คอลัมน์ "เวรนอน" ถูกปลดล็อกให้สามารถเลือกรายชื่อคนนอนได้อิสระตามต้องการ</li><li>เมื่อเลือกเปลี่ยนคนนอน สรุปภาระงานด้านขวาจะคำนวณจำนวนเวรนอนให้ใหม่ทันที</li></ul>
 <h6 class="fw-bold text-primary mt-3"><i class="fa-solid fa-2 me-2"></i>การจัดการภาระงาน</h6>
 <ul><li>แก้ตัวเลขในตารางสรุปฝั่งขวา แล้วกด <b>"จัดใหม่ตามจำนวน"</b></li><li>ปรับแต่งรายวันในตารางซ้ายต่อได้ตามต้องการ จากนั้นกดปุ่ม <b>บันทึก</b> เพื่อบันทึกลง Google Sheet</li></ul>
+<h6 class="fw-bold text-primary mt-3"><i class="fa-solid fa-3 me-2"></i>ชุดที่ 2 (เวรสำรอง)</h6>
+<ul><li>PDF จะดึงชุดที่ 2 จากชีท <b>เวรสำรอง</b> คอลัมน์ C:D:E ตั้งแต่อแถว 4 เป็นต้นไป ตามภาพที่คุณแนบ</li><li>ถ้าไม่มีข้อมูลในชีทสำรอง จะขึ้นว่าไม่มีข้อมูล</li></ul>
 </div><div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">เข้าใจแล้ว</button></div></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwrAuSE3WoSQjqrK7bYOhwTA477PC7aLdsqrVymtDVSgB2y__peP3C5foEnIXMtyqWhyQ/exec";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxDo4ILO3-yF1qu2VKrIvu9IyERsX-z46mXhGBcOqQD5L6EiTTkUayxgg6XwU9lmtT8tw/exec";
 const FETCH_TIMEOUT = 30000;
 var currentData=null,isManualMode=false,isOfflineMode=false,originalSummary=null;
+var backupRosterData=[]; // <-- เพิ่มสำหรับชุดที่ 2 จากชีทเวรสำรอง
 var listMainOfficers=["พ.ต.ท.หญิง พัชรี","พ.ต.ท.หญิง อลิษา","พ.ต.ต.หญิง พัชราภรณ์","ร.ต.ท.กิตติศักดิ์","พ.ต.ต.พรพิมล","ร.ต.อ.นัสรอน","ร.ต.ท.รณชัช"];
 var listAsst1=["ร.ต.ต.พรณรงค์","ว่าที่ ร.ต.ต.สุริยา","จ.ส.ต.ปิติพงษ์"];
 var listAsst2=["ด.ต.หญิง ธมนวรรณ"].concat(listMainOfficers);
@@ -180,7 +176,6 @@ var assistantSet2=["ร.ต.ต.พรณรงค์","ว่าที่ ร.�
 var colorMap={"พ.ต.ท.หญิง พัชรี":{bg:"#fce5cd",text:"#783f04"},"พ.ต.ท.หญิง อลิษา":{bg:"#ead1dc",text:"#4c1130"},"พ.ต.ต.หญิง พัชราภรณ์":{bg:"#fff2cc",text:"#7f6000"},"ร.ต.ท.กิตติศักดิ์":{bg:"#f4ccd3",text:"#741b47"},"พ.ต.ต.พรพิมล":{bg:"#d9ead3",text:"#274e13"},"ร.ต.อ.นัสรอน":{bg:"#c9daf8",text:"#1c4587"},"ร.ต.ท.รณชัช":{bg:"#d9d2e9",text:"#20124d"},"ร.ต.ต.พรณรงค์":{bg:"#d0e0e3",text:"#134f5c"},"ว่าที่ ร.ต.ต.สุริยา":{bg:"#f5e5d3",text:"#5b3f11"},"จ.ส.ต.ปิติพงษ์":{bg:"#e1d5e7",text:"#351c75"},"ด.ต.หญิง ธมนวรรณ":{bg:"#efefef",text:"#434343"}};
 var rankScore={"พ.ต.ท.หญิง พัชรี":100,"พ.ต.ท.หญิง อลิษา":100,"พ.ต.ต.หญิง พัชราภรณ์":90,"พ.ต.ต.พรพิมล":90,"ร.ต.อ.นัสรอน":80,"ร.ต.ท.กิตติศักดิ์":70,"ร.ต.ท.รณชัช":70,"ร.ต.ต.พรณรงค์":60,"ว่าที่ ร.ต.ต.สุริยา":55,"ด.ต.หญิง ธมนวรรณ":40,"จ.ส.ต.ปิติพงษ์":30};
 
-// อัปเดตรายชื่อและยศใหม่ที่ถูกต้องตามที่คุณต้องการ
 var FULL_NAME_MAP = {
   "พ.ต.ท.หญิง พัชรี": "พ.ต.ท.หญิง พัชรี ศรีธัญรัตน์",
   "พ.ต.ท.หญิง อลิษา": "พ.ต.ท.หญิง อลิษา ตาวัน",
@@ -211,7 +206,7 @@ function updateCurrentSheetName(){let y=document.getElementById('yearSelect').va
 function onYearChange(){updateCurrentSheetName();calculateNewRoster(true);}
 window.onload=function(){try{let s=localStorage.getItem('fullNameMap_FINAL_V30');if(s){let p=JSON.parse(s);Object.keys(p).forEach(k=>{FULL_NAME_MAP[k]=p[k];});}}catch(e){}initFullNameEditor();initYearMonthSelectors();calculateNewRoster(true);};
 function renderBadge(name){let s=colorMap[name]||{bg:"#e0e0e0",text:"#000"};return `<span class="badge-person" style="background:${s.bg};color:${s.text}">${name}</span>`;}
-async function calculateNewRoster(showPopup){let y=parseInt(document.getElementById("yearSelect").value),m=parseInt(document.getElementById("monthSelect").value);updateCurrentSheetName();if(showPopup)Swal.fire({title:'กำลังโหลดข้อมูล',html:`เดือน <b>${THAI_MONTHS[m]} พ.ศ. ${y+543}</b> - กรุณารอสักครู่`,allowOutsideClick:false,showConfirmButton:false,didOpen:()=>{Swal.showLoading();}});document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted"><i class="fa-solid fa-spinner fa-spin me-1"></i>กำลังโหลด...</span>`;try{let res=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${y}&month=${m}&_t=${Date.now()}`,{},3,FETCH_TIMEOUT);let data=await res.json();if(data.error)throw new Error(data.error);currentData=data;isManualMode=false;isOfflineMode=false;if(data.fullNameMap){try{let saved=localStorage.getItem('fullNameMap_FINAL_V30');if(!saved)FULL_NAME_MAP=data.fullNameMap;initFullNameEditor();}catch(e){FULL_NAME_MAP=data.fullNameMap;}}document.getElementById("manualModeBadge").classList.add("d-none");document.getElementById("offlineBadge").classList.add("d-none");document.getElementById("onlineBadge").classList.remove("d-none");if(!currentData.lockedFixes)currentData.lockedFixes={};recalculateAllStats(currentData.roster,currentData.year,currentData.month);renderWebPage();document.getElementById("lblSyncStatus").innerHTML=`<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>เชื่อมต่อแล้ว</span>`;document.getElementById('lastSyncTime').innerText=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});if(showPopup)Swal.close();return data;}catch(e){document.getElementById("onlineBadge").classList.add("d-none");document.getElementById("offlineBadge").classList.remove("d-none");document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted">ออฟไลน์ - ใช้ข้อมูลในเครื่อง</span>`;if(showPopup)Swal.close();generateLocalRoster();return null;}}
+async function calculateNewRoster(showPopup){let y=parseInt(document.getElementById("yearSelect").value),m=parseInt(document.getElementById("monthSelect").value);updateCurrentSheetName();if(showPopup)Swal.fire({title:'กำลังโหลดข้อมูล',html:`เดือน <b>${THAI_MONTHS[m]} พ.ศ. ${y+543}</b> - กรุณารอสักครู่`,allowOutsideClick:false,showConfirmButton:false,didOpen:()=>{Swal.showLoading();}});document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted"><i class="fa-solid fa-spinner fa-spin me-1"></i>กำลังโหลด...</span>`;try{let res=await fetchWithRetry(`${GAS_API_URL}?action=getRoster&year=${y}&month=${m}&_t=${Date.now()}`,{},3,FETCH_TIMEOUT);let data=await res.json();if(data.error)throw new Error(data.error);currentData=data;backupRosterData=data.backupRoster||[];isManualMode=false;isOfflineMode=false;if(data.fullNameMap){try{let saved=localStorage.getItem('fullNameMap_FINAL_V30');if(!saved)FULL_NAME_MAP=data.fullNameMap;initFullNameEditor();}catch(e){FULL_NAME_MAP=data.fullNameMap;}}document.getElementById("manualModeBadge").classList.add("d-none");document.getElementById("offlineBadge").classList.add("d-none");document.getElementById("onlineBadge").classList.remove("d-none");if(!currentData.lockedFixes)currentData.lockedFixes={};recalculateAllStats(currentData.roster,currentData.year,currentData.month);renderWebPage();document.getElementById("lblSyncStatus").innerHTML=`<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>เชื่อมต่อแล้ว (ชุดสำรอง ${backupRosterData.length} วัน)</span>`;document.getElementById('lastSyncTime').innerText=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});if(showPopup)Swal.close();return data;}catch(e){document.getElementById("onlineBadge").classList.add("d-none");document.getElementById("offlineBadge").classList.remove("d-none");document.getElementById("lblSyncStatus").innerHTML=`<span class="text-muted">ออฟไลน์ - ใช้ข้อมูลในเครื่อง</span>`;if(showPopup)Swal.close();generateLocalRoster();return null;}}
 function generateLocalRoster(){let y=parseInt(document.getElementById("yearSelect").value),m=parseInt(document.getElementById("monthSelect").value);let total=new Date(y,m,0).getDate();let dayNames=["วันอาทิตย์","วันจันทร์","วันอังคาร","วันพุธ","วันพฤหัสบดี","วันศุกร์","วันเสาร์"];let roster=[];let thamon=[];let cur=1,use3=false;while(cur<=total&&thamon.length<10){thamon.push(cur);cur+=use3?4:3;use3=!use3;}for(let d=1;d<=total;d++){let dt=new Date(y,m-1,d);let isWE=dt.getDay()===0||dt.getDay()===6;let mainIdx=(d-1)%listMainOfficers.length;let main=listMainOfficers[mainIdx];if(isWE&&["พ.ต.ท.หญิง พัชรี","พ.ต.ต.พรพิมล"].includes(main))main=listMainOfficers[(mainIdx+2)%listMainOfficers.length];let a1=listAsst1[Math.floor((d-1)/2)%listAsst1.length];let a2=thamon.includes(d)?"ด.ต.หญิง ธมนวรรณ":listMainOfficers[(d)%listMainOfficers.length];let sl=getSleepFromAssistants(a1,a2);roster.push({day:d,dayName:dayNames[dt.getDay()],main:main,asst1:a1,asst2:a2,sleep:sl});}recalculateAllStats(roster,y,m);isManualMode=false;isOfflineMode=true;renderWebPage();}
 function recalculateAllStats(rosterData,year,month){let all=listMainOfficers.concat(listAsst1,"ด.ต.หญิง ธมนวรรณ");let map={};all.forEach(n=>map[n]={main:0,asst:0,sleep:0});rosterData.forEach(r=>{if(map[r.main]!=null)map[r.main].main++;if(map[r.asst1]!=null)map[r.asst1].asst++;if(map[r.asst2]!=null)map[r.asst2].asst++;if(map[r.sleep]!=null)map[r.sleep].sleep++;});let summary=[];all.forEach(n=>{let it=map[n];summary.push({name:n,main:it.main,asst:it.asst,sleep:it.sleep,total:it.main+it.asst+it.sleep});});let wMap={};listMainOfficers.forEach(n=>wMap[n]={mainCount:0,mainDates:[],asst2Count:0,asst2Dates:[]});rosterData.forEach(r=>{if(r.dayName==="วันเสาร์"||r.dayName==="วันอาทิตย์"){if(wMap[r.main]){wMap[r.main].mainCount++;wMap[r.main].mainDates.push(r.day);}if(wMap[r.asst2]){wMap[r.asst2].asst2Count++;wMap[r.asst2].asst2Dates.push(r.day);}}});let weekendStats={};listMainOfficers.forEach(n=>{weekendStats[n]={mainWeekendCount:wMap[n].mainCount,mainDates:wMap[n].mainDates,asst2WeekendCount:wMap[n].asst2Count,asst2Dates:wMap[n].asst2Dates};});currentData={year:year,month:month,totalDays:new Date(year,month,0).getDate(),roster:rosterData,summary:summary,weekendStats:weekendStats,allOfficers:all,mainOfficers:listMainOfficers,lastModified:0,contentHash:"",fullNameMap:FULL_NAME_MAP,lockedFixes:currentData?currentData.lockedFixes:{}};originalSummary=JSON.parse(JSON.stringify(summary));}
 function renderWebPage(){if(!currentData)return;let dHtml="";currentData.roster.forEach((row,idx)=>{dHtml+=`<tr><td><b>${row.day}</b></td><td><span class="badge ${row.dayName==='วันเสาร์'||row.dayName==='วันอาทิตย์'?'bg-danger':'bg-light text-dark border'}">${row.dayName}</span></td><td>${createDropdown(idx,'main',row.main,listMainOfficers)}</td><td>${createDropdown(idx,'asst1',row.asst1,listAsst1)}</td><td>${createDropdown(idx,'asst2',row.asst2,listAsst2)}</td><td>${createDropdown(idx,'sleep',row.sleep,listSleep,false)}</td></tr>`;});document.getElementById("dutyBody").innerHTML=dHtml;renderSummaryTable();renderWeekendStatsTable();}
@@ -230,7 +225,52 @@ function balanceWeekend(){if(!currentData)return;Swal.fire({title:'กำลั�
 async function saveToGoogleSheet(){if(isOfflineMode){Swal.fire({icon:'warning',title:'ออฟไลน์',text:'กรุณาเชื่อมต่ออินเทอร์เน็ตก่อนบันทึก'});return;}if(!currentData)return;let y=currentData.year,m=currentData.month;Swal.fire({title:'กำลังบันทึก',html:`เดือน <b>${THAI_MONTHS[m]} พ.ศ. ${y+543}</b> - กรุณารอสักครู่`,allowOutsideClick:false,showConfirmButton:false,didOpen:()=>{Swal.showLoading();}});try{let r=await fetchWithRetry(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'saveRoster',finalData:currentData})},3,30000);let res=await r.json();if(res.error)throw new Error(res.error);isManualMode=false;document.getElementById("manualModeBadge").classList.add("d-none");Swal.fire({icon:'success',title:'บันทึกสำเร็จ',html:`บันทึกในชีท <b>${y}-${String(m).padStart(2,'0')}</b> เรียบร้อย`,timer:2000,showConfirmButton:false});}catch(e){Swal.fire({icon:'error',title:'บันทึกไม่สำเร็จ',text:'ลองใหม่อีกครั้ง'});}}
 function showHelp(){new bootstrap.Modal(document.getElementById('helpModal')).show();}
 function formatThaiDate(d,m,y){return `${toThaiDigits(d)} ${THAI_MONTHS[m]} ${toThaiDigits(y+543)}`;}
-function exportDailyPDF(){if(!currentData||!currentData.roster){Swal.fire({icon:'warning',title:'ไม่มีข้อมูล'});return;}Swal.fire({title:'กำลังสร้างเอกสาร PDF',html:`จำนวน <b>${currentData.roster.length} หน้า</b> - แบบฟอร์มราชการ`,allowOutsideClick:false,showConfirmButton:false,didOpen:()=>{Swal.showLoading();}});setTimeout(()=>{let y=currentData.year,m=currentData.month;let html=`<html><head><meta charset="utf-8"><style>@page{size:A4;margin:10mm;}body{font-family:'TH Sarabun New','Sarabun',sans-serif;font-size:17pt;line-height:1.4;color:#000;margin:0;} .page{width:210mm;height:297mm;margin:0 auto;padding:10mm 14mm 8mm 14mm;box-sizing:border-box;page-break-after:always;position:relative;display:flex;flex-direction:column;border:2.5px solid #000;} .page:last-child{page-break-after:avoid;} .content{flex:1;} .header{text-align:center;font-size:20pt;font-weight:bold;margin-bottom:6pt;} .subheader{font-size:16pt;} .field{margin-top:5pt;font-size:16pt;} .dotted{border-bottom:1px dotted #000;display:inline-block;min-width:140px;padding:0 4px;} .dotted-long{min-width:240px;} .dotted-date{min-width:170px;} .dotted-time{min-width:60px;} .date-time-line{margin-top:5pt;font-size:16pt;} .team{margin-top:10pt;} .team-title{font-weight:bold;font-size:16pt;margin-bottom:3pt;} .team-list{margin-left:18pt;line-height:1.8;font-size:16pt;} .report{margin-top:10pt;font-size:15.5pt;line-height:1.5;} .report-list{margin-left:18pt;line-height:1.6;} .signature{margin-top:14pt;font-size:15pt;line-height:2.3;} .sig-line{display:inline-block;border-bottom:1px dotted #000;width:320px;margin:0 6px;} .footer{text-align:center;font-size:9pt;border-top:1px dashed #999;padding-top:3pt;margin-top:auto;}</style></head><body>`;currentData.roster.forEach((row,idx)=>{let thaiDate=formatThaiDate(row.day,m,y);let assistants=[row.asst1,row.asst2];let sortedAssistants=sortByRank(assistants);let team1=[row.main,sortedAssistants[0],sortedAssistants[1]];let team1Set=new Set(team1);let mainCands=listMainOfficers.filter(n=>!team1Set.has(n));if(mainCands.length===0)mainCands=listMainOfficers.filter(n=>n!==row.main);mainCands.sort((a,b)=>(rankScore[b]||0)-(rankScore[a]||0));let team2_p1=mainCands[0]||listMainOfficers[0];let excludedForP2=new Set([...team1,team2_p1]);let set1Cands=assistantSet1.filter(n=>!excludedForP2.has(n)&&n!==row.main);set1Cands.sort((a,b)=>(rankScore[b]||0)-(rankScore[a]||0));let team2_p2=set1Cands[0];let excludedForP3=new Set([...team1,team2_p1,team2_p2]);let set2Cands=assistantSet2.filter(n=>!excludedForP3.has(n));set2Cands.sort((a,b)=>(rankScore[b]||0)-(rankScore[a]||0));let team2_p3=set2Cands[0];if(!team2_p2){let fb=assistantSet1.filter(n=>!excludedForP2.has(n));fb.sort((a,b)=>(rankScore[b]||0)-(rankScore[a]||0));team2_p2=fb[0]||assistantSet1[0];}if(!team2_p3){let fb2=assistantSet2.filter(n=>n!==team2_p2&&!team1Set.has(n));team2_p3=fb2[0]||assistantSet2[0];}let rankOnly1=getRankOnly(row.main);let rankOnly2=getRankOnly(team2_p1);html+=`<div class="page"><div class="content"><div class="header">การรายงานความพร้อมด้านการตรวจสถานที่เกิดเหตุ</div><div class="subheader">แบบการตรวจจำนวนและความพร้อมของเจ้าหน้าที่ตรวจสถานที่เกิดเหตุ</div><div class="field">หน่วยงาน <span class="dotted dotted-long">พิสูจน์หลักฐานจังหวัดตรัง</span></div><div class="date-time-line">ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span> เวลา <span class="dotted dotted-time">${toThaiDigits("๐๘.๐๐")}</span> น.</div><div class="team"><div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div><div class="team-list">${toThaiDigits(1)}. ${expandRank(team1[0])}<br>${toThaiDigits(2)}. ${expandRank(team1[1])}<br>${toThaiDigits(3)}. ${expandRank(team1[2])}</div></div><div class="team"><div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})</div><div class="team-list">${toThaiDigits(1)}. ${expandRank(team2_p1)}<br>${toThaiDigits(2)}. ${expandRank(team2_p2)}<br>${toThaiDigits(3)}. ${expandRank(team2_p3)}</div></div><div class="report"><div>ข้าพเจ้า <span class="dotted">${expandRank(row.main)}</span> ปฏิบัติหน้าที่เวรตรวจสถานที่เกิดเหตุ ขอรายงาน ดังนี้</div><div class="report-list">${toThaiDigits(1)}. ตรวจความพร้อมกำลังพล เครื่องแต่งกาย (ชุดปฏิบัติการฯ) และทรงผม<br>${toThaiDigits(2)}. ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ<br>${toThaiDigits(3)}. ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-${toThaiDigits(19)} เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น</div><div style="margin-left:14pt; margin-top:6pt;">ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ</div><div style="margin-top:8pt;">จึงเรียนมาเพื่อโปรดทราบ</div></div><div class="signature">ลงชื่อ ${rankOnly1} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})<br>ลงชื่อ ${rankOnly2} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})<br>ลงชื่อ พ.ต.อ. <span class="sig-line"></span> ผู้ควบคุมชุดปฏิบัติการ</div></div><div class="footer">** พร้อมแนบภาพถ่ายชุดปฏิบัติการและการเตรียมความพร้อมตามเอกสารแนบ - วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(m)}/${toThaiDigits(y)} (${row.dayName})</div></div>`;});html+=`</body></html>`;Swal.close();let w=window.open('', '_blank');w.document.write(html);w.document.close();setTimeout(()=>{w.focus();w.print();},800);},500);}
+
+function getBackupTeamForDay(day){
+  if(!backupRosterData) return null;
+  for(var i=0;i<backupRosterData.length;i++){
+    if(backupRosterData[i].day === day) return backupRosterData[i].team;
+  }
+  if(backupRosterData[day-1]) return backupRosterData[day-1].team;
+  return null;
+}
+
+function exportDailyPDF(){
+  if(!currentData||!currentData.roster){Swal.fire({icon:'warning',title:'ไม่มีข้อมูล'});return;}
+  Swal.fire({title:'กำลังสร้างเอกสาร PDF',html:`จำนวน <b>${currentData.roster.length} หน้า</b> - ชุดที่ 2 จากชีทเวรสำรอง`,allowOutsideClick:false,showConfirmButton:false,didOpen:()=>{Swal.showLoading();}});
+  setTimeout(()=>{
+    let y=currentData.year,m=currentData.month;
+    let html=`<html><head><meta charset="utf-8"><style>@page{size:A4;margin:10mm;}body{font-family:'TH Sarabun New','Sarabun',sans-serif;font-size:17pt;line-height:1.4;color:#000;margin:0;} .page{width:210mm;height:297mm;margin:0 auto;padding:10mm 14mm 8mm 14mm;box-sizing:border-box;page-break-after:always;position:relative;display:flex;flex-direction:column;border:2.5px solid #000;} .page:last-child{page-break-after:avoid;} .content{flex:1;} .header{text-align:center;font-size:20pt;font-weight:bold;margin-bottom:6pt;} .subheader{font-size:16pt;} .field{margin-top:5pt;font-size:16pt;} .dotted{border-bottom:1px dotted #000;display:inline-block;min-width:140px;padding:0 4px;} .dotted-long{min-width:240px;} .dotted-date{min-width:170px;} .dotted-time{min-width:60px;} .date-time-line{margin-top:5pt;font-size:16pt;} .team{margin-top:10pt;} .team-title{font-weight:bold;font-size:16pt;margin-bottom:3pt;} .team-list{margin-left:18pt;line-height:1.8;font-size:16pt;} .report{margin-top:10pt;font-size:15.5pt;line-height:1.5;} .report-list{margin-left:18pt;line-height:1.6;} .signature{margin-top:14pt;font-size:15pt;line-height:2.3;} .sig-line{display:inline-block;border-bottom:1px dotted #000;width:320px;margin:0 6px;} .footer{text-align:center;font-size:9pt;border-top:1px dashed #999;padding-top:3pt;margin-top:auto;}</style></head><body>`;
+    
+    currentData.roster.forEach((row)=>{
+      let thaiDate=formatThaiDate(row.day,m,y);
+      let assistants=[row.asst1,row.asst2];
+      let sortedAssistants=sortByRank(assistants);
+      let team1=[row.main,sortedAssistants[0],sortedAssistants[1]];
+
+      let backupTeam = getBackupTeamForDay(row.day);
+      let team2_p1, team2_p2, team2_p3;
+      if(backupTeam && backupTeam.length >= 3){
+        team2_p1 = backupTeam[0];
+        team2_p2 = backupTeam[1];
+        team2_p3 = backupTeam[2];
+      } else if(backupTeam && backupTeam.length > 0){
+        team2_p1 = backupTeam[0];
+        team2_p2 = backupTeam[1] || backupTeam[0];
+        team2_p3 = backupTeam[2] || backupTeam[1] || backupTeam[0];
+      } else {
+        team2_p1 = "- ไม่มีข้อมูลในชีทเวรสำรอง -";
+        team2_p2 = "-";
+        team2_p3 = "-";
+      }
+      
+      let rankOnly1=getRankOnly(row.main);
+      let rankOnly2=team2_p1.indexOf("-")===0 ? "ร.ต.อ." : getRankOnly(team2_p1);
+      html+=`<div class="page"><div class="content"><div class="header">การรายงานความพร้อมด้านการตรวจสถานที่เกิดเหตุ</div><div class="subheader">แบบการตรวจจำนวนและความพร้อมของเจ้าหน้าที่ตรวจสถานที่เกิดเหตุ</div><div class="field">หน่วยงาน <span class="dotted dotted-long">พิสูจน์หลักฐานจังหวัดตรัง</span></div><div class="date-time-line">ประจำวันที่ <span class="dotted dotted-date">${thaiDate}</span> เวลา <span class="dotted dotted-time">${toThaiDigits("๐๘.๐๐")}</span> น.</div><div class="team"><div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})</div><div class="team-list">${toThaiDigits(1)}. ${expandRank(team1[0])}<br>${toThaiDigits(2)}. ${expandRank(team1[1])}<br>${toThaiDigits(3)}. ${expandRank(team1[2])}</div></div><div class="team"><div class="team-title">ทีมชุดตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)}) (จากชีทเวรสำรอง)</div><div class="team-list">${toThaiDigits(1)}. ${expandRank(team2_p1)}<br>${toThaiDigits(2)}. ${expandRank(team2_p2)}<br>${toThaiDigits(3)}. ${expandRank(team2_p3)}</div></div><div class="report"><div>ข้าพเจ้า <span class="dotted">${expandRank(row.main)}</span> ปฏิบัติหน้าที่เวรตรวจสถานที่เกิดเหตุ ขอรายงาน ดังนี้</div><div class="report-list">${toThaiDigits(1)}. ตรวจความพร้อมกำลังพล เครื่องแต่งกาย (ชุดปฏิบัติการฯ) และทรงผม<br>${toThaiDigits(2)}. ตรวจความพร้อมเครื่องมือ/อุปกรณ์กระเป๋าตรวจสถานที่เกิดเหตุ และยานพาหนะ<br>${toThaiDigits(3)}. ตรวจความพร้อมอุปกรณ์ป้องกันการแพร่ระบาดของเชื้อไวรัส โควิด-${toThaiDigits(19)} เช่นหน้ากากอนามัย เจลล้างมือ แอลกอฮอล์ เป็นต้น</div><div style="margin-left:14pt; margin-top:6pt;">ผลการดำเนินการ เครื่องแต่งกาย ทรงผมเป็นไปด้วยความเรียบร้อย เจ้าหน้าที่ชุดตรวจฯ เข้าใจและรับทราบการปฏิบัติหน้าที่การตรวจสถานที่เกิดเหตุ</div><div style="margin-top:8pt;">จึงเรียนมาเพื่อโปรดทราบ</div></div><div class="signature">ลงชื่อ ${rankOnly1} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(1)})<br>ลงชื่อ ${rankOnly2} <span class="sig-line"></span> หัวหน้าทีมตรวจสถานที่เกิดเหตุ (ชุดที่ ${toThaiDigits(2)})<br>ลงชื่อ พ.ต.อ. <span class="sig-line"></span> ผู้ควบคุมชุดปฏิบัติการ</div></div><div class="footer">วันที่ ${toThaiDigits(row.day)}/${toThaiDigits(m)}/${toThaiDigits(y)} (${row.dayName}) - ชุดที่ 2 จากชีทเวรสำรอง C:E</div></div>`;
+    });
+    html+=`</body></html>`;Swal.close();let w=window.open('', '_blank');w.document.write(html);w.document.close();setTimeout(()=>{w.focus();w.print();},800);
+  },500);
+}
 </script>
 </body>
 </html>
